@@ -1,86 +1,112 @@
 <template>
-    <div class="flex flex-col min-h-screen bg-black text-white">
-      <main class="flex-grow p-6 flex justify-center items-start">
-        <div class="mt-10 p-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-md">
-          <h2 class="text-3xl font-semibold text-center mb-6">Register</h2>
-          <form @submit.prevent="register">
-            <div class="mb-5">
-              <label for="username" class="block text-beige mb-1">Username</label>
-              <InputText v-model="username" id="username" class="w-full mt-1 bg-black text-white border border-gray-600 rounded focus:border-gray-400 focus:ring-2 focus:ring-gray-500" />
-            </div>
-            <div class="mb-5">
-              <label for="email" class="block text-beige mb-1">Email</label>
-              <InputText v-model="email" id="email" type="email" class="w-full mt-1 bg-black text-white border border-gray-600 rounded focus:border-gray-400 focus:ring-2 focus:ring-gray-500" />
-            </div>
-            <div class="mb-5">
-              <label for="password" class="block text-beige mb-1">Password</label>
-              <Password v-model="password" id="password" toggleMask class="w-full mt-1 bg-black text-white border border-gray-600 rounded focus:border-gray-400 focus:ring-2 focus:ring-gray-500" />
-            </div>
-            <div class="mb-5">
-              <label for="confirmPassword" class="block text-beige mb-1">Confirm Password</label>
-              <Password v-model="confirmPassword" id="confirmPassword" toggleMask class="w-full mt-1 bg-black text-white border border-gray-600 rounded focus:border-gray-400 focus:ring-2 focus:ring-gray-500" />
-            </div>
-            <Button label="Register" type="submit" class="w-full bg-gray-700 text-white font-semibold py-2 rounded hover:bg-gray-600 transition-colors" />
-          </form>
-        </div>
-      </main>
-    </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue';
-  import InputText from 'primevue/inputtext';
-  import Password from 'primevue/password';
-  import Button from 'primevue/button';
-  
-  const username = ref('');
-  const email = ref('');
-  const password = ref('');
-  const confirmPassword = ref('');
-  
-  const register = () => {
-    console.log('Username:', username.value);
-    console.log('Email:', email.value);
-    console.log('Password:', password.value);
-    console.log('Confirm Password:', confirmPassword.value);
-  };
-  </script>
-  
-  <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
-  
-  * {
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  .text-beige {
-    color: #f5f5dc;
-  }
-  
-  .bg-black {
-    background-color: #000;
-  }
-  
-  .bg-gray-800 {
-    background-color: #2d2d2d;
-  }
-  
-  .border-gray-600 {
-    border-color: #4a4a4a;
-  }
-  
-  .focus\:border-gray-400:focus {
-    border-color: #a3a3a3;
-  }
-  
-  .focus\:ring-gray-500:focus {
-    --tw-ring-color: #6b6b6b;
-  }
-  
-  footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-  }
-  </style>
-  
+  <div class="register-form">
+    <form @submit.prevent="register">
+      <div class="form-field">
+        <label for="username">Username</label>
+        <input id="username" v-model="form.username" type="text" required />
+      </div>
+
+      <div class="form-field">
+        <label for="email">Email</label>
+        <input id="email" v-model="form.email" type="email" required />
+      </div>
+
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input id="password" v-model="form.password" type="password" required />
+      </div>
+
+      <div class="form-field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword" v-model="form.confirmPassword" type="password" required />
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+
+export default {
+  setup() {
+    const form = ref({
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
+
+    const register = () => {
+      if (form.value.password !== form.value.confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+      // Perform registration logic
+      console.log('Form Submitted', form.value);
+    };
+
+    return {
+      form,
+      register,
+    };
+  },
+};
+</script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.register-form {
+  font-family: 'Poppins', sans-serif;
+  max-width: 500px;
+  margin: auto;
+  margin-top: 5%;
+  padding: 2rem;
+  border: 1px solid #202020;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  color: black;
+}
+
+button {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #323436;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+button:hover {
+  background-color: #18191a;
+}
+</style>
