@@ -15,7 +15,7 @@
         </ul>
       </nav>
       <div class="hidden md:block">
-        <button class="bg-gray-800 hover:bg-gray-700 text-mainColor font-semibold py-2 px-4 rounded transition duration-300">Login</button>
+        <button @click="$emit('open-login-modal')" class="bg-gray-800 hover:bg-gray-700 text-mainColor font-semibold py-2 px-4 rounded transition duration-300">Login</button>
         <router-link to="/register">
           <button class="ml-4 bg-transparent hover:bg-gray-700 text-mainColor font-semibold hover:text-white py-2 px-4 border border-customColor hover:border-transparent rounded transition duration-300">Sign Up</button>
         </router-link>
@@ -26,7 +26,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: "HeaderComponent",
