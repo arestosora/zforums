@@ -30,6 +30,6 @@ import { authState } from '../auth';
 }
 
 .bg-dark-gray {
-  background-color: #0f0f0f; /* Dark gray color */
+  background-color: #0f0f0f;
 }
 </style>

@@ -8,32 +8,32 @@
       <nav class="mt-4 md:mt-0">
         <ul class="flex space-x-6 text-base font-semibold">
           <li>
-            <a href="#" class="hover:text-gray-400 transition duration-300">About Us</a>
+            <router-link to="/about" class="hover:text-gray-400 transition duration-300">About Us</router-link>
           </li>
           <li>
-            <a href="#" class="hover:text-gray-400 transition duration-300">Contact</a>
+            <router-link to="/contact" class="hover:text-gray-400 transition duration-300">Contact</router-link>
           </li>
           <li>
-            <a href="#" class="hover:text-gray-400 transition duration-300">Privacy Policy</a>
+            <router-link to="/privacy-policy" class="hover:text-gray-400 transition duration-300">Privacy Policy</router-link>
           </li>
         </ul>
       </nav>
       <div class="mt-4 md:mt-0">
         <ul class="flex space-x-4">
           <li>
-            <a href="#" class="hover:text-gray-400 transition duration-300">
+            <router-link to="https://www.facebook.com" class="hover:text-gray-400 transition duration-300">
               <font-awesome-icon :icon="['fab', 'facebook']" class="h-5 w-5" />
-            </a>
+            </router-link>
           </li>
           <li>
-            <a href="#" class="hover:text-gray-400 transition duration-300">
+            <router-link to="https://www.twitter.com" class="hover:text-gray-400 transition duration-300">
               <font-awesome-icon :icon="['fab', 'twitter']" class="h-5 w-5" />
-            </a>
+            </router-link>
           </li>
           <li>
-            <a href="#" class="hover:text-gray-400 transition duration-300">
+            <router-link to="https://www.instagram.com" class="hover:text-gray-400 transition duration-300">
               <font-awesome-icon :icon="['fab', 'instagram']" class="h-5 w-5" />
-            </a>
+            </router-link>
           </li>
         </ul>
       </div>
@@ -46,12 +46,14 @@ import { defineComponent } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faFacebook, faTwitter, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { RouterLink } from 'vue-router';
 library.add(faFacebook, faTwitter, faInstagram);
 
 export default defineComponent({
   name: "FooterComponent",
   components: {
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    RouterLink
   }
 });
 </script>
