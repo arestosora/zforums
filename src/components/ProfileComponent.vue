@@ -43,7 +43,7 @@
   
   const currentSection = ref('Name');
   
-  const name = ref(authState.user?.email || '');
+  const name = ref(authState.user?.name || '');
   const email = ref(authState.user?.email || '');
   const password = ref('');
   const confirmPassword = ref('');

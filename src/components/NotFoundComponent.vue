@@ -41,7 +41,7 @@
   }
   
   .not-found a {
-    color: #1e90ff;
+    color: #1eff3c;
     text-decoration: none;
     font-weight: 600;
     font-family: 'Poppins', sans-serif;

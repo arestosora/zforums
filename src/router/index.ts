@@ -44,8 +44,8 @@ const router = createRouter({
       }
     },
     {
-      path: '/post',
-      name: 'post',
+      path: '/posts',
+      name: 'posts',
       component: PostComponent,
       beforeEnter: (to, from, next) => {
         if (authState.isAuthenticated) {

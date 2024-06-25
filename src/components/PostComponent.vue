@@ -1,156 +1,123 @@
 <template>
-    <div class="container">
-    <div class="post" v-for="post in posts" :key="post.id">
-      <div class="header">
-        <img class="avatar"src="https://instagram.fbaq1-1.fna.fbcdn.net/v/t51.2885-19/296898576_623247425685424_9175405358834707152_n.jpg?_nc_ht=instagram.fbaq1-1.fna.fbcdn.net&_nc_cat=104&_nc_ohc=QXyhXewcihMQ7kNvgFwJhw_&edm=AEhyXUkBAAAA&ccb=7-5&oh=00_AYDAwwqCnKgTpHF1RPepjvMCdGteicljc_gy_RYm9j8VDw&oe=6680C8E9&_nc_sid=8f1549" alt="Avatar" />
-        <div class="user-info">
-          <span class="username">{{ post.author.name }}</span>
-          <span class="timestamp">{{ post.createdAt }}</span>
+  <div class="flex">
+    <!-- Sidebar -->
+    <Sidebar />
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-4 flex-1">
+      <div v-if="error" class="text-red-500">{{ error }}</div>
+      <div class="flex justify-end mb-4">
+        <button @click="openModal" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400">Create New Post</button>
+      </div>
+      <div v-for="post in posts" :key="post.id"
+        class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg">
+        <div class="header flex items-center mb-4">
+          <img class="avatar w-10 h-10 rounded-full mr-4" :src="post.author!.avatar" alt="Avatar" />
+          <div class="user-info">
+            <div class="flex items-center">
+              <span class="username font-bold">{{ post.author!.name }}</span>
+              <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="content mb-4">
+          <p>{{ post.content }}</p>
+        </div>
+        <div class="actions flex justify-between text-gray-500">
+          <button class="like-button hover:text-green-500">Like</button>
+          <button class="comment-button hover:text-green-500">Comment</button>
+          <button class="share-button hover:text-green-500">Share</button>
         </div>
       </div>
-      <div class="content">
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.content }}</p>
-      </div>
-      <div class="actions">
-        <button class="like-button">Like</button>
-        <button class="comment-button">Comment</button>
-        <button class="share-button">Share</button>
+      <div v-if="posts.length === 0" class="text-white">
+        Loading...
       </div>
     </div>
-    <div v-if="posts.length === 0">
-      Loading...
-    </div>
+
+    <!-- Create Post Modal -->
+    <CreatePostComponent :visible="isModalVisible" @close="closeModal" @postCreated="handlePostCreated" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { authState } from '../auth'; // Importa el estado de autenticación
-
-interface Author {
-    id: number;
-    name: string;
-    email: string;
-    avatar: string;
-    role: string;
-    createdAt: string;
-    deletedAt: string | null;
-}
-
-interface Post {
-    id: number;
-    title: string;
-    content: string;
-    createdAt: string;
-    deletedAt: string | null;
-    author: Author;
-    comments: any[]; // Ajusta según la estructura real de los comentarios
-}
+import { authState } from '../auth';
+import { format } from 'date-fns';
+import type { Post } from '@/interfaces/post';
+import Sidebar from './SidebarComponent.vue';
+import CreatePostComponent from './CreatePostComponent.vue';
 
 const posts = ref<Post[]>([]);
+const error = ref<string | null>(null);
+const isModalVisible = ref(false);
 
 onMounted(async () => {
-    if (!authState.token) {
-        console.error('No token available');
-        return;
-    }
+  if (!authState.token) {
+    error.value = 'No token available';
+    return;
+  }
 
-    try {
-        const response = await axios.get('/posts', {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${authState.token}`
-            }
-        });
-        posts.value = response.data;
-        console.log('Datos recibidos:', response.data);
-    } catch (error) {
-        if (error.response) {
-            console.error('Error en la respuesta del servidor:', error.response.data);
-            console.error('Código de estado:', error.response.status);
-            console.error('Encabezados:', error.response.headers);
-        } else if (error.request) {
-            console.error('No se recibió respuesta del servidor:', error.request);
-        } else {
-            console.error('Error en la configuración de la solicitud:', error.message);
-        }
-        console.error('Configuración completa del error:', error.config);
-    }
+  try {
+    const response = await axios.get('/posts', {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
+    posts.value = response.data;
+    console.log('Datos recibidos:', response.data);
+  } catch (err) {
+    error.value = 'Error fetching posts';
+    console.error(err);
+  }
 });
+
+const formatDate = (dateStr: string) => {
+  return format(new Date(dateStr), 'dd/MM/yyyy HH:mm');
+};
+
+const openModal = () => {
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+const handlePostCreated = (newPostContent: string) => {
+  const newPost = {
+    title: 'New Post',
+    content: newPostContent,
+  };
+  posts.value.unshift(newPost);
+};
 </script>
 
 <style scoped>
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #000000;
-    padding: 20px;
+  background-color: #000000;
+  min-height: 100vh;
 }
 
 .post {
-    background-color: #000000;
-    color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 15px;
-    margin: 10px 0;
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.user-info {
-    display: flex;
-    flex-direction: column;
+.header .avatar {
+  border-radius: 50%;
 }
 
 .username {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .timestamp {
-    color: #777;
-    font-size: 0.9em;
-}
-
-.content {
-    margin-bottom: 10px;
-}
-
-.actions {
-    display: flex;
-    justify-content: space-around;
+  color: #777;
 }
 
 .actions button {
-    background: none;
-    border: none;
-    color: #365899;
-    cursor: pointer;
-    font-size: 1em;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.actions button:hover {
-    background-color: #f0f2f5;
+  cursor: pointer;
 }
 </style>

@@ -9,8 +9,10 @@ import 'primevue/resources/themes/saga-blue/theme.css';       // theme
 import 'primevue/resources/primevue.min.css';                // core css
 import 'primeicons/primeicons.css';
 import './axios'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const app = createApp(App)
+.component('font-awesome-icon', FontAwesomeIcon)
 
 app.use(createPinia())
 app.use(router)
