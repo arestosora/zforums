@@ -22,6 +22,7 @@
 </template>
 
 <script lang="ts">
+import { useRouter } from 'vue-router';
 import type { RegisterForm } from '@/interfaces/registerForm';
 import axios from 'axios';
 import { ref } from 'vue';
@@ -34,9 +35,16 @@ export default {
       password: '',
     });
 
+    const router = useRouter();
+
     const register = async () => {
-       const res = await axios.post('/auth/register', form.value);
-        console.log(res.data);
+      try {
+        const response = await axios.post('/auth/register', form.value);
+        console.log(response.data);
+        router.push('/login');
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     return {

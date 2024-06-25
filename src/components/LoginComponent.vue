@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import InputText from 'primevue/inputtext';
-import { login } from '../auth';
+import { login, logout } from '../auth'; // Asegúrate de importar correctamente
 
 interface Props {
   isOpen: boolean;
@@ -41,10 +41,8 @@ const closeModal = () => {
   }, 300);
 };
 
-const handleLogin = () => {
-  console.log('Email:', email.value);
-  console.log('Password:', password.value);
-  login({ email: email.value });
+const handleLogin = async () => {
+  await login({ email: email.value, password: password.value });
   closeModal();
 };
 
