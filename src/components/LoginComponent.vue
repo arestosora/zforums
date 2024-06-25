@@ -1,7 +1,6 @@
 <template>
-  <div v-if="props.isOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div class="login-form mt-10 p-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-md">
-      <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+  <div v-if="props.isOpen" class="fixed inset-0 flex items-center justify-center backdrop-blur-lg bg-black bg-opacity-50">
+    <div :class="['login-form mt-10 p-8 bg-gray-800 rounded-lg shadow-lg w-full max-w-md', isModalOpen ? 'modal-enter' : 'modal-leave']">
       <form @submit.prevent="handleLogin">
         <div class="form-field mb-5">
           <label for="email" class="block text-beige mb-1">Email</label>
@@ -19,9 +18,8 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import InputText from 'primevue/inputtext';
 import { login } from '../auth';
 
@@ -34,9 +32,13 @@ const emit = defineEmits(['close']);
 
 const email = ref('');
 const password = ref('');
+const isModalOpen = ref(false);
 
 const closeModal = () => {
-  emit('close');
+  isModalOpen.value = false;
+  setTimeout(() => {
+    emit('close');
+  }, 300);
 };
 
 const handleLogin = () => {
@@ -45,8 +47,19 @@ const handleLogin = () => {
   login({ email: email.value });
   closeModal();
 };
-</script>
 
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    isModalOpen.value = true;
+  }
+});
+
+onMounted(() => {
+  if (props.isOpen) {
+    isModalOpen.value = true;
+  }
+});
+</script>
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
@@ -81,6 +94,19 @@ const handleLogin = () => {
   border: 1px solid #202020;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transform: scale(0.9);
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.modal-enter {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modal-leave {
+  transform: scale(0.9);
+  opacity: 0;
 }
 
 h2 {
@@ -106,7 +132,7 @@ h2 {
   border-radius: 5px;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
-  color: black;
+  color: white;
 }
 
 button {
@@ -132,5 +158,9 @@ button:hover {
 .btn-login {
   background-color: #4a4a4a;
   font-weight: 600;
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(10px);
 }
 </style>
