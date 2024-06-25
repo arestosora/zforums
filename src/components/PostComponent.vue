@@ -1,66 +1,84 @@
 <template>
     <div class="container">
-        <div class="post" v-if="post">
-            <div class="header">
-                <img class="avatar" :src="post.avatar" alt="Avatar" />
-                <div class="user-info">
-                    <span class="username">{{ post.name }}</span>
-                    <span class="timestamp">{{ post.createdAt }}</span>
-                </div>
-            </div>
-            <div class="content">
-                <p>{{ post.content }}</p>
-            </div>
-            <div class="actions">
-                <button class="like-button">Like</button>
-                <button class="comment-button">Comment</button>
-                <button class="share-button">Share</button>
-            </div>
+    <div class="post" v-for="post in posts" :key="post.id">
+      <div class="header">
+        <img class="avatar"src="https://instagram.fbaq1-1.fna.fbcdn.net/v/t51.2885-19/296898576_623247425685424_9175405358834707152_n.jpg?_nc_ht=instagram.fbaq1-1.fna.fbcdn.net&_nc_cat=104&_nc_ohc=QXyhXewcihMQ7kNvgFwJhw_&edm=AEhyXUkBAAAA&ccb=7-5&oh=00_AYDAwwqCnKgTpHF1RPepjvMCdGteicljc_gy_RYm9j8VDw&oe=6680C8E9&_nc_sid=8f1549" alt="Avatar" />
+        <div class="user-info">
+          <span class="username">{{ post.author.name }}</span>
+          <span class="timestamp">{{ post.createdAt }}</span>
         </div>
-        <div v-else>
-            Loading...
-        </div>
+      </div>
+      <div class="content">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.content }}</p>
+      </div>
+      <div class="actions">
+        <button class="like-button">Like</button>
+        <button class="comment-button">Comment</button>
+        <button class="share-button">Share</button>
+      </div>
     </div>
+    <div v-if="posts.length === 0">
+      Loading...
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { authState } from '../auth'; // Importa el estado de autenticación
 
-interface Props {
-    avatar: string
-    name: string
-    content: string
+interface Author {
+    id: number;
+    name: string;
+    email: string;
+    avatar: string;
+    role: string;
+    createdAt: string;
+    deletedAt: string | null;
 }
 
-const posts = ref<Post | null>(null)
+interface Post {
+    id: number;
+    title: string;
+    content: string;
+    createdAt: string;
+    deletedAt: string | null;
+    author: Author;
+    comments: any[]; // Ajusta según la estructura real de los comentarios
+}
+
+const posts = ref<Post[]>([]);
 
 onMounted(async () => {
+    if (!authState.token) {
+        console.error('No token available');
+        return;
+    }
+
     try {
-        const response = await axios.get('/posts',{headers:{'Accept':'application/json', 'Authorization':'Bearer token'}})  .then(response => {
-    posts.value = response.data;
-    console.log('Datos recibidos:', response.data);
-    
-  })
-  .catch(error => {
-    if (error.response) {
-      console.error('Error en la respuesta del servidor:', error.response.data);
-      console.error('Código de estado:', error.response.status);
-      console.error('Encabezados:', error.response.headers);
-    } else if (error.request) {
-      console.error('No se recibió respuesta del servidor:', error.request);
-    } else {
-      console.error('Error en la configuración de la solicitud:', error.message);
-    }
-    console.error('Configuración completa del error:', error.config);
-  });
-
-        
+        const response = await axios.get('/posts', {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${authState.token}`
+            }
+        });
+        posts.value = response.data;
+        console.log('Datos recibidos:', response.data);
     } catch (error) {
-        console.error('Error fetching the post:', error)
+        if (error.response) {
+            console.error('Error en la respuesta del servidor:', error.response.data);
+            console.error('Código de estado:', error.response.status);
+            console.error('Encabezados:', error.response.headers);
+        } else if (error.request) {
+            console.error('No se recibió respuesta del servidor:', error.request);
+        } else {
+            console.error('Error en la configuración de la solicitud:', error.message);
+        }
+        console.error('Configuración completa del error:', error.config);
     }
-})
-
+});
 </script>
 
 <style scoped>
