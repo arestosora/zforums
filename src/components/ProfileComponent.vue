@@ -39,7 +39,7 @@
   import InputText from 'primevue/inputtext';
   import Password from 'primevue/password';
   import Button from 'primevue/button';
-  import { authState } from '../auth'; // Importar el estado de autenticación
+  import { authState } from '../auth';
   
   const currentSection = ref('Name');
   
@@ -51,16 +51,11 @@
   const buttonClass = (isActive: boolean) => isActive ? 'bg-gray-700 text-white' : 'bg-gray-500 text-gray-200';
   
   const updatenameAndEmail = () => {
-    // Aquí puedes manejar el proceso de actualización del nombre de usuario y correo electrónico
     console.log('Name:', name.value);
     console.log('Email:', email.value);
-  
-    // Actualizar el estado de autenticación con los nuevos datos del usuario
     authState.user = {
       email: email.value
     };
-  
-    // Guardar el estado de autenticación actualizado en localStorage
     localStorage.setItem('authState', JSON.stringify(authState));
   
     alert("Profile updated successfully");
@@ -71,8 +66,6 @@
       alert("Passwords do not match");
       return;
     }
-  
-    // Aquí puedes manejar el proceso de actualización de la contraseña
     console.log('Password:', password.value);
   
     alert("Password updated successfully");

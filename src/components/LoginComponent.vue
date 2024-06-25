@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import InputText from 'primevue/inputtext';
-import { login } from '../auth'; // Importar el estado de autenticación
+import { login } from '../auth';
 
 interface Props {
   isOpen: boolean;
@@ -40,10 +40,8 @@ const closeModal = () => {
 };
 
 const handleLogin = () => {
-  // Aquí puedes manejar el proceso de login
   console.log('Email:', email.value);
   console.log('Password:', password.value);
-  // Simular autenticación exitosa
   login({ email: email.value });
   closeModal();
 };

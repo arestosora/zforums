@@ -43,7 +43,6 @@ export default {
         alert('Passwords do not match!');
         return;
       }
-      // Perform registration logic
       console.log('Form Submitted', form.value);
     };
 

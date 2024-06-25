@@ -2,8 +2,8 @@
   <footer class="bg-black text-mainColor shadow-md mt-8">
     <div class="container mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center">
       <div class="flex items-center">
-        <img src="@/assets/logo.png" alt="Logo" class="h-10">
-        <span class="ml-2 text-base font-semibold">© 2024 GeekO</span>
+        <img src="@/assets/logo2.png" alt="Logo" class="h-10">
+        <span class="ml-2 text-base font-semibold">© 2024 Anime Connoiseurs</span>
       </div>
       <nav class="mt-4 md:mt-0">
         <ul class="flex space-x-6 text-base font-semibold">

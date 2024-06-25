@@ -3,10 +3,10 @@
     <div class="container mx-auto px-6 py-2 flex justify-center items-center">
       <div class="text-white text-center">
         <span v-if="!authState.isAuthenticated">
-          if you need to register, 
+          if you need to sign up, 
           <router-link to="/register" class="text-light-green hover:underline">click here</router-link>,
-          or if you want to log in, 
-          <button @click="$emit('open-login-modal')" class="text-light-green hover:underline">click here</button>
+          or if you want to sign in, 
+          <button @click="$emit('open-login-modal')" class="text-light-green hover:underline">click here.</button>
         </span>
       </div>
     </div>
@@ -16,7 +16,6 @@
 <script setup lang="ts">
 import { authState } from '../auth';
 
-// No additional JavaScript changes are needed for this update
 </script>
 
 <style scoped>
@@ -27,7 +26,7 @@ import { authState } from '../auth';
 }
 
 .text-light-green {
-  color: #90ee90; /* Example of a light green color */
+  color: #90ee90; 
 }
 
 .bg-dark-gray {
