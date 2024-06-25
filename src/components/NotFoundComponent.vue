@@ -1,8 +1,8 @@
 <template>
     <div class="not-found">
-      <h1>404 - Página No Encontrada</h1>
-      <p>Lo sentimos, la página que buscas no existe.</p>
-      <router-link to="/">Volver al inicio</router-link>
+      <h1>404 - Page Not Found</h1>
+      <p>Sorry, the page you're looking for does not exist.</p>
+      <router-link to="/">Go back home</router-link>
     </div>
   </template>
   
