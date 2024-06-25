@@ -33,11 +33,12 @@ interface Props {
     content: string
 }
 
-const post = ref<Post | null>(null)
+const posts = ref<Post | null>(null)
 
 onMounted(async () => {
     try {
-        const response = await axios.get('http://localhost:8000/api/v1/posts',{headers:{'Accept':'application/json', 'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkFkb0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlkIjoyLCJpYXQiOjE3MTkyOTUwMzMsImV4cCI6MTcxOTI5ODYzM30.2_d4VILhvymQAwKLKh4hPxIdylWAZTDzLjeu9U3EypY'}})  .then(response => {
+        const response = await axios.get('/posts',{headers:{'Accept':'application/json', 'Authorization':'Bearer token'}})  .then(response => {
+    posts.value = response.data;
     console.log('Datos recibidos:', response.data);
     
   })

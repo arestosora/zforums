@@ -22,6 +22,8 @@
 import { ref, watch, onMounted } from 'vue';
 import InputText from 'primevue/inputtext';
 import { login, logout } from '../auth'; // Asegúrate de importar correctamente
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 interface Props {
   isOpen: boolean;
@@ -43,6 +45,7 @@ const closeModal = () => {
 
 const handleLogin = async () => {
   await login({ email: email.value, password: password.value });
+  router.push('/')
   closeModal();
 };
 
