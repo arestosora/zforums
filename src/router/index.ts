@@ -5,6 +5,7 @@ import ProfileComponent from '@/components/ProfileComponent.vue'
 import AboutComponent from '@/components/AboutComponent.vue'
 import PostComponent from '@/components/PostComponent.vue'
 import { authState } from '../auth';
+import NotFound from '@/components/NotFoundComponent.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -22,7 +23,7 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: RegisterComponent,
-      beforeEnter:(to, from, next) => {
+      beforeEnter: (to, from, next) => {
         if (authState.isAuthenticated) {
           next('/');
         } else {
@@ -53,6 +54,11 @@ const router = createRouter({
           next('/register');
         }
       }
+    },
+    {
+      path: '/:pathMatch(.*)*', // Captura todas las rutas no definidas
+      name: 'NotFound',
+      component: NotFound,
     },
   ]
 })
