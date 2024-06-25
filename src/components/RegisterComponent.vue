@@ -3,7 +3,7 @@
     <form @submit.prevent="register">
       <div class="form-field">
         <label for="username">Username</label>
-        <input id="username" v-model="form.username" type="text" required />
+        <input id="username" v-model="form.name" type="text" required />
       </div>
 
       <div class="form-field">
@@ -16,11 +16,6 @@
         <input id="password" v-model="form.password" type="password" required />
       </div>
 
-      <div class="form-field">
-        <label for="confirmPassword">Confirm Password</label>
-        <input id="confirmPassword" v-model="form.confirmPassword" type="password" required />
-      </div>
-
       <button type="submit">Register</button>
     </form>
   </div>
@@ -30,22 +25,15 @@
 import type { RegisterForm } from '@/interfaces/registerForm';
 import { ref } from 'vue';
 
-
-
 export default {
   setup() {
     const form = ref<RegisterForm>({
-      username: '',
+      name: '',
       email: '',
       password: '',
-      confirmPassword: '',
     });
 
     const register = () => {
-      if (form.value.password !== form.value.confirmPassword) {
-        alert('Passwords do not match!');
-        return;
-      }
       console.log('Form Submitted', form.value);
     };
 
