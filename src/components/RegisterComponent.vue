@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import type { RegisterForm } from '@/interfaces/registerForm';
+import axios from 'axios';
 import { ref } from 'vue';
 
 export default {
@@ -33,8 +34,9 @@ export default {
       password: '',
     });
 
-    const register = () => {
-      console.log('Form Submitted', form.value);
+    const register = async () => {
+       const res = await axios.post('/auth/register', form.value);
+        console.log(res.data);
     };
 
     return {
