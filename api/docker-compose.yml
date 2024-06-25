@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: hotels_api
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - my_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  my_postgres_data:
