@@ -19,7 +19,7 @@
             </div>
           </div>
           <div class="content mb-4">
-            <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="4" placeholder="What's on your mind?"></textarea>
+            <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3" placeholder="What's on your mind?"></textarea>
           </div>
           <div class="actions flex justify-end text-gray-500">
             <button @click="createPost" class="create-post-button hover:text-green-500">
@@ -150,7 +150,7 @@ const createPost = async () => {
 .create-post-button {
   background-color: #22c55e;
   color: #ffffff;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 1rem; /* Reducir la altura del botón */
   border-radius: 0.375rem;
   transition: background-color 0.3s ease;
   font-weight: bold;
