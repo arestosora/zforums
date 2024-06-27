@@ -32,11 +32,19 @@
           class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
           <div class="header flex items-center mb-4">
             <img class="avatar w-10 h-10 rounded-full mr-4" :src="post.author!.avatar" alt="Avatar" />
-            <div class="user-info">
+            <div class="user-info flex-grow">
               <div class="flex items-center">
                 <span class="username font-bold">{{ post.author!.name }}</span>
                 <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
               </div>
+            </div>
+            <div v-if="authState.user?.id === post.author!.id" class="flex ml-auto">
+              <button @click="editPost(post.id!)" class="edit-button hover:text-blue-500 mr-2">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button @click="deletePost(post.id!)" class="delete-button hover:text-red-500">
+                <i class="pi pi-trash"></i>
+              </button>
             </div>
           </div>
           <div class="content mb-4">
@@ -122,6 +130,25 @@ const createPost = async () => {
     console.error(err);
   }
 };
+
+const deletePost = async (postId: number) => {
+  try {
+    await axios.delete(`/posts/${postId}`, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
+    posts.value = posts.value.filter(post => post.id !== postId);
+  } catch (err) {
+    error.value = 'Error deleting post. Please try again.';
+    console.error(err);
+  }
+};
+
+const editPost = (postId: number) => {
+  console.log('Edit post', postId);
+  // Lógica para editar el post
+};
 </script>
 
 <style scoped>
@@ -196,6 +223,30 @@ const createPost = async () => {
 
 .actions .action-button:hover {
   color: #22c55e;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.delete-button:hover {
+  color: #ff0000;
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  color: #00bfff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.edit-button:hover {
+  color: #007fff;
 }
 
 textarea {

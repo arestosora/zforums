@@ -23,6 +23,7 @@ export const login = async (credentials: { email: string; password: string }) =>
 
       authState.isAuthenticated = true;
       authState.user = {
+        id: userDetails.id,
         email: credentials.email,
         name: userDetails.name,
         avatar: userDetails.avatar,
