@@ -17,8 +17,9 @@ export const saveAuthState = () => {
 export const login = async (credentials: { email: string; password: string }) => {
   try {
     const response = await axios.post('http://127.0.0.1:8000/api/v1/auth/login', credentials);
+    console.log('Login response:', response.data);
     if (response.data.token) {
-      const userDetails = response.data.user;
+      const userDetails = response.data;
 
       authState.isAuthenticated = true;
       authState.user = {

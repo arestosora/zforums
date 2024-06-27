@@ -29,9 +29,6 @@
           <button class="share-button hover:text-green-500">Share</button>
         </div>
       </div>
-      <div v-if="posts.length === 0" class="text-white">
-        Loading...
-      </div>
     </div>
 
     <!-- Create Post Modal -->
@@ -68,7 +65,7 @@ onMounted(async () => {
     posts.value = response.data;
     console.log('Datos recibidos:', response.data);
   } catch (err) {
-    error.value = 'Error fetching posts';
+    error.value = 'Your session has expired. Please log in again.';
     console.error(err);
   }
 });
