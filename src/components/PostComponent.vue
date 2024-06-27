@@ -21,7 +21,8 @@
           <div class="content mb-4">
             <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3"
               placeholder="What's on your mind?"></textarea>
-            <input type="text" v-model="newPostImageUrl" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" placeholder="Image URL (optional)">
+            <input type="text" v-model="newPostImageUrl" class="w-full p-2 bg-gray-800 text-white border rounded mb-4"
+              placeholder="Image URL (optional)">
           </div>
           <div class="actions flex justify-end text-gray-500">
             <button @click="createPost" class="create-post-button hover:text-green-500">
@@ -52,11 +53,11 @@
           </div>
           <div class="content mb-4">
             <p>{{ post.content }}</p>
-            <img v-if="post.imageUrl" :src="post.imageUrl" alt="Post Image" class="w-full rounded">
+            <img v-if="post.imageUrl" :src="post.imageUrl" alt="Post Image" class="post-image w-full rounded">
           </div>
           <div class="actions flex justify-between text-gray-500">
-            <button class="action-button hover:text-green-500">
-              <i class="pi pi-thumbs-up mr-1"></i>Like
+            <button @click="toggleLike(post)" :class="{'text-green-500': post.liked, 'text-gray-500': !post.liked}" class="action-button hover:text-green-500">
+              <i class="pi pi-thumbs-up mr-1"></i>Like <span class="ml-1">{{ post.likes }}</span>
             </button>
             <button class="action-button hover:text-green-500">
               <i class="pi pi-comments mr-1"></i>Comment
@@ -99,7 +100,10 @@ onMounted(async () => {
         'Authorization': `Bearer ${authState.token}`
       }
     });
-    posts.value = response.data.sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+    posts.value = response.data.map((post: Post) => ({
+      ...post,
+      liked: false // Inicialmente ningún post está marcado como "liked"
+    })).sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
     console.log('Datos recibidos:', response.data);
   } catch (err) {
     toast.add({ severity: 'error', summary: 'Error fetching posts', detail: 'Please try again later.' });
@@ -129,7 +133,10 @@ const createPost = async () => {
       }
     });
 
-    posts.value.unshift(response.data);
+    posts.value.unshift({
+      ...response.data,
+      liked: false
+    });
     newPostContent.value = '';
     newPostImageUrl.value = '';
 
@@ -157,15 +164,32 @@ const deletePost = async (postId: number) => {
 const editPost = (postId: number) => {
   toast.add({ severity: 'info', summary: 'Edit Post', detail: 'Feature coming soon!' });
 };
+
+const toggleLike = async (post: Post) => {
+  try {
+    await axios.patch(`/posts/${post.id}/like`, {}, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
+
+    post.liked = !post.liked;
+    post.likes += post.liked ? 1 : -1;
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'Error liking post', detail: 'Please try again later.' });
+    console.error(err);
+  }
+};
 </script>
 
 <style scoped>
-@import 'primeicons/primeicons.css';
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 .main-content {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  font-family: 'Poppins', sans-serif;
 }
 
 .posts-wrapper {
@@ -265,6 +289,12 @@ textarea {
   padding: 0.5rem;
   width: 100%;
   resize: none;
+}
+
+img.post-image {
+  max-width: 100%;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
 }
 
 img {

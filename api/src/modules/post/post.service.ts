@@ -49,4 +49,21 @@ export class PostService {
     const post = await this.findOne(id);
     await this.postRepository.softRemove(post);
   }
+
+  async likePost(postId: number): Promise<Post> {
+    const post = await this.findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+
+    post.likes = (post.likes || 0) + 1;
+
+    try {
+      return await this.postRepository.save(post);
+    } catch (error) {
+      console.error('Error liking post:', error);
+      throw new InternalServerErrorException('Failed to like post');
+    }
+  }
+  
 }

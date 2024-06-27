@@ -8,6 +8,7 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto, UpdatePostDto } from './post.dto';
@@ -81,6 +82,16 @@ export class PostController {
       return { statusCode: HttpStatus.OK, message: 'Post deleted successfully' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Patch(':id/like')
+  async likePost(@Param('id') id: number) {
+    try {
+      const post = await this.postService.likePost(id);
+      return post;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

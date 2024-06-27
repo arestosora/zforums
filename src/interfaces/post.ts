@@ -14,6 +14,8 @@ interface Author {
     title?: string;
     content?: string;
     imageUrl?: string;
+    likes?: number;
+    liked?: boolean;
     createdAt?: string;
     deletedAt?: string | null;
     author?: Author;
