@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-black text-mainColor shadow-md mt-8">
+  <footer class="bg-black text-white shadow-md mt-8">
     <div class="container mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center">
       <div class="flex items-center">
         <img src="@/assets/logo2.png" alt="Logo" class="h-10">
@@ -22,17 +22,17 @@
         <ul class="flex space-x-4">
           <li>
             <router-link to="https://www.facebook.com" class="hover:text-gray-400 transition duration-300">
-              <font-awesome-icon :icon="['fab', 'facebook']" class="h-5 w-5" />
+              <font-awesome-icon :icon="['fab', 'facebook']" class="h-5 w-5 text-white" />
             </router-link>
           </li>
           <li>
             <router-link to="https://www.twitter.com" class="hover:text-gray-400 transition duration-300">
-              <font-awesome-icon :icon="['fab', 'twitter']" class="h-5 w-5" />
+              <font-awesome-icon :icon="['fab', 'twitter']" class="h-5 w-5 text-white" />
             </router-link>
           </li>
           <li>
             <router-link to="https://www.instagram.com" class="hover:text-gray-400 transition duration-300">
-              <font-awesome-icon :icon="['fab', 'instagram']" class="h-5 w-5" />
+              <font-awesome-icon :icon="['fab', 'instagram']" class="h-5 w-5 text-white" />
             </router-link>
           </li>
         </ul>

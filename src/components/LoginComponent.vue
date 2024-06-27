@@ -18,10 +18,11 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import InputText from 'primevue/inputtext';
-import { login, logout } from '../auth'; // Asegúrate de importar correctamente
+import { login } from '../auth';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -45,7 +46,7 @@ const closeModal = () => {
 
 const handleLogin = async () => {
   await login({ email: email.value, password: password.value });
-  router.push('/')
+  router.push('/posts');
   closeModal();
 };
 
@@ -61,6 +62,7 @@ onMounted(() => {
   }
 });
 </script>
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 

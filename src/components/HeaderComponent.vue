@@ -2,9 +2,6 @@
   <header class="bg-dark-gray shadow-md">
     <div class="container mx-auto px-6 py-2 flex justify-between items-center">
       <div>
-        <router-link to="/" class="text-light-green hover:underline">
-          <i class="pi pi-home"></i>
-        </router-link>
       </div>
       <div class="text-white text-center flex-grow">
         <span v-if="!authState.isAuthenticated">
@@ -15,15 +12,22 @@
         </span>
       </div>
       <div v-if="authState.isAuthenticated">
-        <button @click="logout" class="text-light-green hover:underline">log out</button>
+        <button @click="handleLogout" class="text-light-green hover:underline">log out</button>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { authState } from '../auth';
-import { logout } from '../auth';
+import { useRouter } from 'vue-router';
+import { authState, logout } from '../auth';
+
+const router = useRouter();
+
+const handleLogout = async () => {
+  await logout();
+  router.push('/');
+};
 </script>
 
 <style scoped>
@@ -41,7 +45,7 @@ import { logout } from '../auth';
   background-color: #0f0f0f;
 }
 
-.pi-home {
+.pi-globe {
   font-size: 1.5rem; /* Ajusta el tamaño del ícono según tus necesidades */
 }
 </style>

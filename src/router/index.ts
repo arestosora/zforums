@@ -6,61 +6,76 @@ import AboutComponent from '@/components/AboutComponent.vue'
 import PostComponent from '@/components/PostComponent.vue'
 import { authState } from '../auth';
 import NotFound from '@/components/NotFoundComponent.vue'
+
+const routes = [
+  {
+    path: '/',
+    name: 'home',
+    component: HomeComponent
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: AboutComponent
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterComponent,
+    beforeEnter: (_to: any, _from: any, next: (arg0: string | undefined) => void) => {
+      if (authState.isAuthenticated) {
+        next('/');
+      } else {
+        next(undefined);
+      }
+    }
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileComponent,
+    beforeEnter: (_to: any, _from: any, next: (arg0: string | undefined) => void) => {
+      if (authState.isAuthenticated) {
+        next(undefined);
+      } else {
+        next('/register');
+      }
+    }
+  },
+  {
+    path: '/posts',
+    name: 'posts',
+    component: PostComponent,
+    beforeEnter: (_to: any, _from: any, next: (arg0: string | undefined) => void) => {
+      if (authState.isAuthenticated) {
+        next(undefined);
+      } else {
+        next('/register');
+      }
+    }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFound,
+  },
+];
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeComponent
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutComponent
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: RegisterComponent,
-      beforeEnter: (to, from, next) => {
-        if (authState.isAuthenticated) {
-          next('/');
-        } else {
-          next();
-        }
-      }
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileComponent,
-      beforeEnter: (to, from, next) => {
-        if (authState.isAuthenticated) {
-          next();
-        } else {
-          next('/register');
-        }
-      }
-    },
-    {
-      path: '/posts',
-      name: 'posts',
-      component: PostComponent,
-      beforeEnter: (to, from, next) => {
-        if (authState.isAuthenticated) {
-          next();
-        } else {
-          next('/register');
-        }
-      }
-    },
-    {
-      path: '/:pathMatch(.*)*', // Captura todas las rutas no definidas
-      name: 'NotFound',
-      component: NotFound,
-    },
-  ]
-})
+  routes,
+});
 
-export default router
+router.beforeEach((to, _from, next) => {
+  if (to.path === '/') {
+    if (authState.isAuthenticated) {
+      next('/posts');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+export default router;
