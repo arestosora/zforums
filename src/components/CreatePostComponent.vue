@@ -56,8 +56,4 @@ const createPost = async () => {
     bottom: 0;
     left: 0;
 }
-
-.bg-opacity-50 {
-    background-opacity: 0.5;
-}
 </style>
