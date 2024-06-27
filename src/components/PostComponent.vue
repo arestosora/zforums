@@ -7,11 +7,9 @@
     <div class="main-content flex-1 flex flex-col">
       <div class="posts-wrapper flex-1 flex flex-col overflow-y-auto">
         <!-- Create Post Container -->
-        <div
-          class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
+        <div class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
           <div class="header flex items-center mb-4">
-            <img class="avatar w-10 h-10 rounded-full mr-4"
-              :src="authState.user?.avatar || 'path/to/default/avatar.png'" alt="Avatar" />
+            <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || 'path/to/default/avatar.png'" alt="Avatar" />
             <div class="user-info">
               <div class="flex items-center">
                 <span class="username font-bold">{{ authState.user?.name || 'Username' }}</span>
@@ -19,10 +17,14 @@
             </div>
           </div>
           <div class="content mb-4">
-            <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3"
-              placeholder="What's on your mind?"></textarea>
-            <input type="text" v-model="newPostImageUrl" class="w-full p-2 bg-gray-800 text-white border rounded mb-4"
-              placeholder="Image URL (optional)">
+            <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3" placeholder="What's on your mind?"></textarea>
+            <div class="flex items-center mb-4">
+              <button @click="triggerFileInput" class="upload-button hover:text-green-500">
+                <i class="pi pi-image mr-2"></i>Upload Image
+              </button>
+              <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden">
+            </div>
+            <img v-if="newPostImageUrl" :src="newPostImageUrl" alt="Selected Image" class="selected-image w-full rounded mb-4">
           </div>
           <div class="actions flex justify-end text-gray-500">
             <button @click="createPost" class="create-post-button hover:text-green-500">
@@ -31,15 +33,13 @@
           </div>
         </div>
 
-        <div v-for="post in sortedPosts" :key="post.id"
-          class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
+        <div v-for="post in sortedPosts" :key="post.id" class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
           <div class="header flex items-center mb-4">
             <img class="avatar w-10 h-10 rounded-full mr-4" :src="post.author!.avatar" alt="Avatar" />
             <div class="user-info flex-grow">
               <div class="flex items-center">
                 <span class="username font-bold">{{ post.author!.name }}</span>
-                <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{
-                  formatDate(post.createdAt!) }}</span>
+                <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
               </div>
             </div>
             <div v-if="authState.user?.id === post.author!.id" class="flex ml-auto">
@@ -82,10 +82,10 @@ import type { Post } from '@/interfaces/post';
 import Sidebar from './SidebarComponent.vue';
 
 const posts = ref<Post[]>([]);
-const error = ref<string | null>(null);
 const newPostContent = ref('');
 const newPostImageUrl = ref('');
 const toast = useToast();
+const fileInput = ref<HTMLInputElement | null>(null);
 
 onMounted(async () => {
   if (!authState.token) {
@@ -102,9 +102,9 @@ onMounted(async () => {
     });
     posts.value = response.data.map((post: Post) => ({
       ...post,
-      liked: false // Inicialmente ningún post está marcado como "liked"
+      liked: false
     })).sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
-    console.log('Datos recibidos:', response.data);
+    console.log('Data received:', response.data);
   } catch (err) {
     toast.add({ severity: 'error', summary: 'Error fetching posts', detail: 'Please try again later.' });
     console.error(err);
@@ -177,6 +177,41 @@ const toggleLike = async (post: Post) => {
     post.likes! += post.liked ? 1 : -1;
   } catch (err) {
     toast.add({ severity: 'error', summary: 'Error liking post', detail: 'Please try again later.' });
+    console.error(err);
+  }
+};
+
+const triggerFileInput = () => {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
+};
+
+const handleFileUpload = async (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const uploadPreset = 'ljgz0ika';
+  const apiKey = '186842759432363';
+  const timestamp = Math.floor(Date.now() / 1000);
+
+  formData.append('upload_preset', uploadPreset);
+  formData.append('api_key', apiKey);
+  formData.append('timestamp', timestamp.toString());
+
+  try {
+    const response = await axios.post('https://api.cloudinary.com/v1_1/dijbgmxrh/image/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    newPostImageUrl.value = response.data.secure_url;
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'Error uploading image', detail: 'Please try again later.' });
     console.error(err);
   }
 };
@@ -298,6 +333,25 @@ img.post-image {
 }
 
 img {
+  max-width: 100%;
+  border-radius: 0.375rem;
+}
+
+button.upload-button {
+  background: none;
+  border: none;
+  color: #22c55e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+button.upload-button:hover {
+  color: #16a34a;
+}
+
+.selected-image {
   max-width: 100%;
   border-radius: 0.375rem;
 }
