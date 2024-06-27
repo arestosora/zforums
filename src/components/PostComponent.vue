@@ -9,7 +9,7 @@
       <div class="flex justify-end mb-4">
         <button @click="openModal" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400">Create New Post</button>
       </div>
-      <div v-for="post in posts" :key="post.id"
+      <div v-for="post in sortedPosts" :key="post.id"
         class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg">
         <div class="header flex items-center mb-4">
           <img class="avatar w-10 h-10 rounded-full mr-4" :src="post.author!.avatar" alt="Avatar" />
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { authState } from '../auth';
 import { format } from 'date-fns';
@@ -62,12 +62,16 @@ onMounted(async () => {
         'Authorization': `Bearer ${authState.token}`
       }
     });
-    posts.value = response.data;
+    posts.value = response.data.sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
     console.log('Datos recibidos:', response.data);
   } catch (err) {
     error.value = 'Your session has expired. Please log in again.';
     console.error(err);
   }
+});
+
+const sortedPosts = computed(() => {
+  return posts.value.slice().sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
 });
 
 const formatDate = (dateStr: string) => {
@@ -83,7 +87,7 @@ const closeModal = () => {
 };
 
 const handlePostCreated = (newPostContent: string) => {
-  const newPost = {
+  const newPost: Post = {
     title: 'New Post',
     content: newPostContent,
   };
