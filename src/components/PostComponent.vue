@@ -1,46 +1,61 @@
 <template>
-  <div class="flex">
+  <div class="flex h-screen">
     <!-- Sidebar -->
     <Sidebar />
 
     <!-- Main Content -->
-    <div class="container mx-auto p-4 flex-1">
+    <div class="main-content flex-1 flex flex-col">
       <div v-if="error" class="text-red-500">{{ error }}</div>
-      <div class="flex justify-end mb-4">
-        <button @click="openModal" class="create-post-button">
-          <i class="pi pi-plus mr-2"></i>Create New Post
-        </button>
-      </div>
-      <div v-for="post in sortedPosts" :key="post.id"
-        class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
-        <div class="header flex items-center mb-4">
-          <img class="avatar w-10 h-10 rounded-full mr-4" :src="post.author!.avatar" alt="Avatar" />
-          <div class="user-info">
-            <div class="flex items-center">
-              <span class="username font-bold">{{ post.author!.name }}</span>
-              <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
+
+      <div class="posts-wrapper flex-1 flex flex-col overflow-y-auto">
+        <!-- Create Post Container -->
+        <div class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
+          <div class="header flex items-center mb-4">
+            <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || 'path/to/default/avatar.png'" alt="Avatar" />
+            <div class="user-info">
+              <div class="flex items-center">
+                <span class="username font-bold">{{ authState.user?.name || 'Username' }}</span>
+              </div>
             </div>
           </div>
+          <div class="content mb-4">
+            <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="4" placeholder="What's on your mind?"></textarea>
+          </div>
+          <div class="actions flex justify-end text-gray-500">
+            <button @click="createPost" class="create-post-button hover:text-green-500">
+              <i class="pi pi-plus mr-2"></i>Post
+            </button>
+          </div>
         </div>
-        <div class="content mb-4">
-          <p>{{ post.content }}</p>
-        </div>
-        <div class="actions flex justify-between text-gray-500">
-          <button class="action-button hover:text-green-500">
-            <i class="pi pi-thumbs-up mr-1"></i>Like
-          </button>
-          <button class="action-button hover:text-green-500">
-            <i class="pi pi-comments mr-1"></i>Comment
-          </button>
-          <button class="action-button hover:text-green-500">
-            <i class="pi pi-share-alt mr-1"></i>Share
-          </button>
+
+        <div v-for="post in sortedPosts" :key="post.id"
+          class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
+          <div class="header flex items-center mb-4">
+            <img class="avatar w-10 h-10 rounded-full mr-4" :src="post.author!.avatar" alt="Avatar" />
+            <div class="user-info">
+              <div class="flex items-center">
+                <span class="username font-bold">{{ post.author!.name }}</span>
+                <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="content mb-4">
+            <p>{{ post.content }}</p>
+          </div>
+          <div class="actions flex justify-between text-gray-500">
+            <button class="action-button hover:text-green-500">
+              <i class="pi pi-thumbs-up mr-1"></i>Like
+            </button>
+            <button class="action-button hover:text-green-500">
+              <i class="pi pi-comments mr-1"></i>Comment
+            </button>
+            <button class="action-button hover:text-green-500">
+              <i class="pi pi-share-alt mr-1"></i>Share
+            </button>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- Create Post Modal -->
-    <CreatePostComponent :visible="isModalVisible" @close="closeModal" @postCreated="handlePostCreated" />
   </div>
 </template>
 
@@ -51,11 +66,10 @@ import { authState } from '../auth';
 import { format } from 'date-fns';
 import type { Post } from '@/interfaces/post';
 import Sidebar from './SidebarComponent.vue';
-import CreatePostComponent from './CreatePostComponent.vue';
 
 const posts = ref<Post[]>([]);
 const error = ref<string | null>(null);
-const isModalVisible = ref(false);
+const newPostContent = ref('');
 
 onMounted(async () => {
   if (!authState.token) {
@@ -86,30 +100,51 @@ const formatDate = (dateStr: string) => {
   return format(new Date(dateStr), 'dd/MM/yyyy HH:mm');
 };
 
-const openModal = () => {
-  isModalVisible.value = true;
-};
+const createPost = async () => {
+  if (!newPostContent.value) return;
 
-const closeModal = () => {
-  isModalVisible.value = false;
-};
+  try {
+    const response = await axios.post('/posts', {
+      title: 'New Post',
+      content: newPostContent.value
+    }, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
+    
+    posts.value.unshift(response.data);
+    newPostContent.value = '';
 
-const handlePostCreated = (newPostContent: string) => {
-  const newPost: Post = {
-    title: 'New Post',
-    content: newPostContent,
-  };
-  posts.value.unshift(newPost);
+    location.reload();
+  } catch (err) {
+    error.value = 'Error creating post. Please try again.';
+    console.error(err);
+  }
 };
 </script>
 
 <style scoped>
 @import 'primeicons/primeicons.css';
 
-.container {
-  background-color: #000000;
-  min-height: 100vh;
-  padding-top: 2rem;
+.main-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.posts-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto; 
+}
+
+.create-post-container {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 0.75rem;
 }
 
 .create-post-button {
@@ -129,6 +164,7 @@ const handlePostCreated = (newPostContent: string) => {
 
 .post {
   max-width: 700px;
+  width: 100%;
   margin: 0 auto;
   border-radius: 0.75rem;
   transition: transform 0.3s ease;
@@ -160,5 +196,15 @@ const handlePostCreated = (newPostContent: string) => {
 
 .actions .action-button:hover {
   color: #22c55e;
+}
+
+textarea {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 0.375rem;
+  color: #fff;
+  padding: 0.5rem;
+  width: 100%;
+  resize: none;
 }
 </style>

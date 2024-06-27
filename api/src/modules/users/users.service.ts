@@ -22,7 +22,7 @@ export class UsersService {
   async findByEmailWithPassword(email: string): Promise<User> {
     return this.userRepository.findOne({
       where: { email },
-      select: ['id', 'name', 'email', 'password', 'role'],
+      select: ['id', 'name', 'email', 'password', 'role', 'avatar'],
     });
   }
 
@@ -35,7 +35,7 @@ export class UsersService {
       where: {
         id: id
       }
-    })
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UpdateResult> {

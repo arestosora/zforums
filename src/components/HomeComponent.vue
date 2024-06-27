@@ -1,10 +1,8 @@
 <template>
-  <div class="flex flex-col min-h-screen text-white">
-    <main class="flex-grow p-6 flex flex-col justify-start items-center">
-      <img :src="animeGif" alt="Anime GIF" class="rounded-lg interactive-image">
-      <img :src="img2" alt="Image 2" class="rounded-lg interactive-image image-secondary">
-      <img :src="img3" alt="Image 3" class="rounded-lg interactive-image image-third"> <!-- Nueva imagen añadida aquí -->
-    </main>
+  <div class="home-content flex flex-col items-center overflow-auto p-6">
+    <img :src="animeGif" alt="Anime GIF" class="rounded-lg interactive-image">
+    <img :src="img2" alt="Image 2" class="rounded-lg interactive-image image-secondary">
+    <img :src="img3" alt="Image 3" class="rounded-lg interactive-image image-third"> <!-- Nueva imagen añadida aquí -->
   </div>
 </template>
 
@@ -14,7 +12,13 @@ import img2 from '@/assets/img2.png';
 import img3 from '@/assets/img3.png'; // Importando la nueva imagen
 </script>
 
-<style>
+<style scoped>
+.home-content {
+  max-height: 100%;
+  overflow-y: auto;
+  width: 100%;
+}
+
 .rounded-lg {
   border-radius: 0.9rem; 
 }

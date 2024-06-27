@@ -47,6 +47,8 @@ export class AuthService {
     return {
       token,
       email,
+      name: user.name,
+      avatar: user.avatar,
     };
   }
 

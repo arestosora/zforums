@@ -16,9 +16,9 @@ const closeModal = () => {
 </script>
 
 <template>
-  <div class="background-image text-white min-h-screen flex flex-col">
+  <div class="app-container background-image text-white flex flex-col min-h-screen">
     <HeaderComponent @open-login-modal="openModal" />
-    <main class="flex-grow p-6">
+    <main class="flex-grow p-6 overflow-auto">
       <router-view />
     </main>
     <FooterComponent />
@@ -27,16 +27,23 @@ const closeModal = () => {
 </template>
 
 <style>
-body {
+body, html, #app {
   margin: 0;
+  height: 100%;
+  overflow: hidden;
 }
-html, body, #app {
+
+.app-container {
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
+
 .background-image {
   background-image: url('@/assets/background.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  flex: 1;
 }
 </style>

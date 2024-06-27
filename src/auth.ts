@@ -26,7 +26,6 @@ export const login = async (credentials: { email: string; password: string }) =>
         email: credentials.email,
         name: userDetails.name,
         avatar: userDetails.avatar,
-        handle: userDetails.handle
       };
       authState.token = response.data.token;
       saveAuthState();
