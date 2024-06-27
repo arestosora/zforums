@@ -13,6 +13,7 @@ interface Author {
     id?: number;
     title?: string;
     content?: string;
+    imageUrl?: string;
     createdAt?: string;
     deletedAt?: string | null;
     author?: Author;

@@ -11,6 +11,10 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsString()
+  imageUrl?: string;
+
+  @IsOptional()
+  @IsString()
   authorId?: string;
 }
 
@@ -22,4 +26,8 @@ export class UpdatePostDto {
   @IsOptional()
   @IsString()
   content?: string;
+
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 }

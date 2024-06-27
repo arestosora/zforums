@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn, Cr
 import { Role } from '../enums/rol.enum';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
+import { PostShare } from './postShare.entity';
 
 @Entity()
 export class User {
@@ -28,6 +29,9 @@ export class User {
 
   @OneToMany(() => Comment, comment => comment.author)
   comments: Comment[];
+
+  @OneToMany(() => PostShare, postShare => postShare.user)
+  sharedPosts: PostShare[];
 
   @CreateDateColumn()
   createdAt: Date;

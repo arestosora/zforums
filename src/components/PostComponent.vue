@@ -5,13 +5,13 @@
 
     <!-- Main Content -->
     <div class="main-content flex-1 flex flex-col">
-      <div v-if="error" class="text-red-500">{{ error }}</div>
-
       <div class="posts-wrapper flex-1 flex flex-col overflow-y-auto">
         <!-- Create Post Container -->
-        <div class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
+        <div
+          class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
           <div class="header flex items-center mb-4">
-            <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || 'path/to/default/avatar.png'" alt="Avatar" />
+            <img class="avatar w-10 h-10 rounded-full mr-4"
+              :src="authState.user?.avatar || 'path/to/default/avatar.png'" alt="Avatar" />
             <div class="user-info">
               <div class="flex items-center">
                 <span class="username font-bold">{{ authState.user?.name || 'Username' }}</span>
@@ -19,7 +19,9 @@
             </div>
           </div>
           <div class="content mb-4">
-            <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3" placeholder="What's on your mind?"></textarea>
+            <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3"
+              placeholder="What's on your mind?"></textarea>
+            <input type="text" v-model="newPostImageUrl" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" placeholder="Image URL (optional)">
           </div>
           <div class="actions flex justify-end text-gray-500">
             <button @click="createPost" class="create-post-button hover:text-green-500">
@@ -35,7 +37,8 @@
             <div class="user-info flex-grow">
               <div class="flex items-center">
                 <span class="username font-bold">{{ post.author!.name }}</span>
-                <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
+                <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{
+                  formatDate(post.createdAt!) }}</span>
               </div>
             </div>
             <div v-if="authState.user?.id === post.author!.id" class="flex ml-auto">
@@ -49,6 +52,7 @@
           </div>
           <div class="content mb-4">
             <p>{{ post.content }}</p>
+            <img v-if="post.imageUrl" :src="post.imageUrl" alt="Post Image" class="w-full rounded">
           </div>
           <div class="actions flex justify-between text-gray-500">
             <button class="action-button hover:text-green-500">
@@ -70,6 +74,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import { useToast } from 'primevue/usetoast';
 import { authState } from '../auth';
 import { format } from 'date-fns';
 import type { Post } from '@/interfaces/post';
@@ -78,10 +83,12 @@ import Sidebar from './SidebarComponent.vue';
 const posts = ref<Post[]>([]);
 const error = ref<string | null>(null);
 const newPostContent = ref('');
+const newPostImageUrl = ref('');
+const toast = useToast();
 
 onMounted(async () => {
   if (!authState.token) {
-    error.value = 'No token available';
+    toast.add({ severity: 'error', summary: 'Session Expired', detail: 'Please log in again.' });
     return;
   }
 
@@ -95,7 +102,7 @@ onMounted(async () => {
     posts.value = response.data.sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
     console.log('Datos recibidos:', response.data);
   } catch (err) {
-    error.value = 'Your session has expired. Please log in again.';
+    toast.add({ severity: 'error', summary: 'Error fetching posts', detail: 'Please try again later.' });
     console.error(err);
   }
 });
@@ -114,19 +121,21 @@ const createPost = async () => {
   try {
     const response = await axios.post('/posts', {
       title: 'New Post',
-      content: newPostContent.value
+      content: newPostContent.value,
+      imageUrl: newPostImageUrl.value
     }, {
       headers: {
         'Authorization': `Bearer ${authState.token}`
       }
     });
-    
+
     posts.value.unshift(response.data);
     newPostContent.value = '';
+    newPostImageUrl.value = '';
 
     location.reload();
   } catch (err) {
-    error.value = 'Error creating post. Please try again.';
+    toast.add({ severity: 'error', summary: 'Error creating post', detail: 'Please try again later.' });
     console.error(err);
   }
 };
@@ -140,14 +149,13 @@ const deletePost = async (postId: number) => {
     });
     posts.value = posts.value.filter(post => post.id !== postId);
   } catch (err) {
-    error.value = 'Error deleting post. Please try again.';
+    toast.add({ severity: 'error', summary: 'Error deleting post', detail: 'Please try again later.' });
     console.error(err);
   }
 };
 
 const editPost = (postId: number) => {
-  console.log('Edit post', postId);
-  // Lógica para editar el post
+  toast.add({ severity: 'info', summary: 'Edit Post', detail: 'Feature coming soon!' });
 };
 </script>
 
@@ -164,7 +172,7 @@ const editPost = (postId: number) => {
   display: flex;
   flex-direction: column;
   flex: 1;
-  overflow-y: auto; 
+  overflow-y: auto;
 }
 
 .create-post-container {
@@ -177,7 +185,7 @@ const editPost = (postId: number) => {
 .create-post-button {
   background-color: #22c55e;
   color: #ffffff;
-  padding: 0.25rem 1rem; /* Reducir la altura del botón */
+  padding: 0.25rem 1rem;
   border-radius: 0.375rem;
   transition: background-color 0.3s ease;
   font-weight: bold;
@@ -250,12 +258,17 @@ const editPost = (postId: number) => {
 }
 
 textarea {
-  background-color: #2d2d2d;
+  background-color: #1f1e1e;
   border: 1px solid #444;
   border-radius: 0.375rem;
   color: #fff;
   padding: 0.5rem;
   width: 100%;
   resize: none;
+}
+
+img {
+  max-width: 100%;
+  border-radius: 0.375rem;
 }
 </style>
