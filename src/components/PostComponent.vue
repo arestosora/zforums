@@ -174,7 +174,7 @@ const toggleLike = async (post: Post) => {
     });
 
     post.liked = !post.liked;
-    post.likes += post.liked ? 1 : -1;
+    post.likes! += post.liked ? 1 : -1;
   } catch (err) {
     toast.add({ severity: 'error', summary: 'Error liking post', detail: 'Please try again later.' });
     console.error(err);
