@@ -17,14 +17,19 @@
       </form>
     </div>
   </div>
+  <Toast ref="toast" />
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import InputText from 'primevue/inputtext';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
 import { login } from '../auth';
 import { useRouter } from 'vue-router';
+
 const router = useRouter();
+const toast = useToast();
 
 interface Props {
   isOpen: boolean;
@@ -45,9 +50,16 @@ const closeModal = () => {
 };
 
 const handleLogin = async () => {
-  await login({ email: email.value, password: password.value });
-  router.push('/posts');
-  closeModal();
+  try {
+    await login({ email: email.value, password: password.value });
+    toast.add({ severity: 'success', summary: 'Login Successful', detail: 'Welcome back!', life: 3000 });
+    closeModal();
+    router.push('/posts');
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Login Failed', detail: 'Invalid credentials', life: 3000 });
+    closeModal();
+    router.push('/');  // Redirigir a la página de inicio
+  }
 };
 
 watch(() => props.isOpen, (newVal) => {

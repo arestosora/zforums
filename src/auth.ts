@@ -38,6 +38,7 @@ export const login = async (credentials: { email: string; password: string }) =>
     authState.user = null;
     authState.token = null;
     saveAuthState();
+    throw error; // Asegúrate de lanzar el error para que `handleLogin` lo maneje correctamente
   }
 };
 
