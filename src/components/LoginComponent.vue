@@ -58,7 +58,7 @@ const handleLogin = async () => {
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Login Failed', detail: 'Invalid credentials', life: 3000 });
     closeModal();
-    router.push('/');  // Redirigir a la página de inicio
+    router.push('/');
   }
 };
 

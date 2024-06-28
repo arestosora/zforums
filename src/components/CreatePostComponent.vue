@@ -41,7 +41,7 @@ const createPost = async () => {
 
     emits('postCreated', content.value);
     closeModal();
-    router.go(0); // Recargar la página actual
+    router.go(0);
 };
 </script>
 

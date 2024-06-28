@@ -3,7 +3,8 @@ import { ref } from 'vue';
 import HeaderComponent from './components/HeaderComponent.vue';
 import FooterComponent from './components/FooterComponent.vue';
 import LoginComponent from './components/LoginComponent.vue';
-
+import LoadingScreen from './components/LoadingScreenComponent.vue';
+import { isLoading } from './loadingState';
 const isModalOpen = ref(false);
 
 const openModal = () => {
@@ -17,6 +18,7 @@ const closeModal = () => {
 
 <template>
   <div class="app-container background-image text-white flex flex-col min-h-screen">
+    <LoadingScreen v-if="isLoading" />
     <HeaderComponent @open-login-modal="openModal" />
     <main class="flex-grow p-6 overflow-auto">
       <router-view />
@@ -26,8 +28,7 @@ const closeModal = () => {
   </div>
 </template>
 
-<style>
-
+<style scoped>
 .app-container {
   display: flex;
   flex-direction: column;

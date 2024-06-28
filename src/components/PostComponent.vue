@@ -5,7 +5,7 @@
 
     <!-- Main Content -->
     <div class="main-content flex-1 flex flex-col">
-      <div class="posts-wrapper flex-1 flex flex-col overflow-y-auto">
+      <div class="posts-wrapper flex-1 flex flex-col overflow-y-auto pb-16">
         <!-- Create Post Container -->
         <div class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
           <div class="header flex items-center mb-4">
@@ -67,6 +67,9 @@
             </button>
           </div>
         </div>
+        
+        <!-- Extra space at the bottom -->
+        <div class="bottom-gap"></div>
       </div>
     </div>
   </div>
@@ -238,6 +241,11 @@ const navigateToComments = (postId: number) => {
   flex-direction: column;
   flex: 1;
   overflow-y: auto;
+  padding-bottom: 4rem; /* Adjust the bottom padding as needed */
+}
+
+.bottom-gap {
+  height: 4rem; /* Adjust the height to create the gap */
 }
 
 .create-post-container {
