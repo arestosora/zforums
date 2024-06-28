@@ -27,16 +27,11 @@ const closeModal = () => {
 </template>
 
 <style>
-body, html, #app {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-}
 
 .app-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: fit-content;
 }
 
 .background-image {
