@@ -16,6 +16,11 @@
         <input id="password" v-model="form.password" type="password" required />
       </div>
 
+      <div class="form-field">
+        <label for="avatar">Profile Picture</label>
+        <input id="avatar" type="file" @change="handleFileUpload" />
+      </div>
+
       <button type="submit">Register</button>
     </form>
   </div>
@@ -33,15 +38,46 @@ export default {
       name: '',
       email: '',
       password: '',
+      avatar:'',
     });
 
     const router = useRouter();
+    const avatarFile = ref<string | null>(null);
+
+    const handleFileUpload = async (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const uploadPreset = 'ljgz0ika';
+      const apiKey = '186842759432363';
+      const timestamp = Math.floor(Date.now() / 1000);
+
+      formData.append('upload_preset', uploadPreset);
+      formData.append('api_key', apiKey);
+      formData.append('timestamp', timestamp.toString());
+
+      try {
+        const response = await axios.post('https://api.cloudinary.com/v1_1/dijbgmxrh/image/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        avatarFile.value = response.data.secure_url;
+        form.value.avatar = avatarFile.value!;
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
     const register = async () => {
       try {
-        const response = await axios.post('/auth/register', form.value);
+        const response = await axios.post('/auth/register', { ...form.value });
         console.log(response.data);
-        router.push('/login');
+        router.push('/');
       } catch (error) {
         console.error(error);
       }
@@ -49,6 +85,7 @@ export default {
 
     return {
       form,
+      handleFileUpload,
       register,
     };
   },
