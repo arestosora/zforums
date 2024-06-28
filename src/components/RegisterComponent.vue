@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen w-full relative">
     <div :class="{ 'blur-sm': isLoading }" class="flex-1 flex items-center justify-center bg-gray-200 overflow-hidden">
-      <img src="../assets/image" alt="Imagen de la izquierda" class="w-full h-full object-cover" />
+      <img src="../assets/image.webp" alt="Imagen de la izquierda" class="w-full h-full object-cover" />
     </div>
     <div :class="{ 'blur-sm': isLoading }" class="flex-1 flex items-center justify-center">
       <form @submit.prevent="register" class="max-w-lg w-full p-12">
