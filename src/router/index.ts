@@ -4,6 +4,7 @@ import HomeComponent from '@/components/HomeComponent.vue'
 import ProfileComponent from '@/components/ProfileComponent.vue'
 import AboutComponent from '@/components/AboutComponent.vue'
 import PostComponent from '@/components/PostComponent.vue'
+import PostComments from '@/components/PostCommentsComponent.vue'
 import { authState } from '../auth';
 import NotFound from '@/components/NotFoundComponent.vue'
 
@@ -51,6 +52,19 @@ const routes = [
         next(undefined);
       } else {
         next('/register');
+      }
+    }
+  },
+  {
+    path: '/post/:id',
+    name: 'postComments',
+    component: PostComments,
+    props: true,
+    beforeEnter: (_to: any, _from: any, next: (arg0: string | undefined) => void) => {
+      if (authState.isAuthenticated) {
+        next(undefined);
+      } else {
+        next('/');
       }
     }
   },

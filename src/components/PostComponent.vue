@@ -59,7 +59,7 @@
             <button @click="toggleLike(post)" :class="{'text-green-500': post.liked, 'text-gray-500': !post.liked}" class="action-button hover:text-green-500">
               <i class="pi pi-thumbs-up mr-1"></i>Like <span class="ml-1">{{ post.likes }}</span>
             </button>
-            <button class="action-button hover:text-green-500">
+            <button @click="navigateToComments(post.id!)" class="action-button hover:text-green-500">
               <i class="pi pi-comments mr-1"></i>Comment
             </button>
             <button class="action-button hover:text-green-500">
@@ -80,7 +80,9 @@ import { authState } from '../auth';
 import { format } from 'date-fns';
 import type { Post } from '@/interfaces/post';
 import Sidebar from './SidebarComponent.vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const posts = ref<Post[]>([]);
 const newPostContent = ref('');
 const newPostImageUrl = ref('');
@@ -214,6 +216,10 @@ const handleFileUpload = async (event: Event) => {
     toast.add({ severity: 'error', summary: 'Error uploading image', detail: 'Please try again later.' });
     console.error(err);
   }
+};
+
+const navigateToComments = (postId: number) => {
+  router.push({ name: 'postComments', params: { id: postId } });
 };
 </script>
 
