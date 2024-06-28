@@ -60,7 +60,7 @@
               <i class="pi pi-thumbs-up mr-1"></i>Like <span class="ml-1">{{ post.likes }}</span>
             </button>
             <button @click="navigateToComments(post.id!)" class="action-button hover:text-green-500">
-              <i class="pi pi-comments mr-1"></i>Comment
+              <i class="pi pi-comments mr-1"></i>Comment <span class="ml-1">{{ post.comments.length }}</span>
             </button>
             <button class="action-button hover:text-green-500">
               <i class="pi pi-share-alt mr-1"></i>Share
