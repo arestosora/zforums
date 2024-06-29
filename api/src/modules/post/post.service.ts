@@ -24,14 +24,14 @@ export class PostService {
 
   async findAll(): Promise<Post[]> {
     return this.postRepository.find({
-      relations: ['author', 'comments'],
+      relations: ['author', 'comments', 'comments.author'],
     });
   }
 
   async findOne(id: number): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { id },
-      relations: ['author', 'comments'],
+      relations: ['author', 'comments', 'comments.author'],
     });
     if (!post) {
       throw new NotFoundException(`Post with ID ${id} not found`);
@@ -65,5 +65,4 @@ export class PostService {
       throw new InternalServerErrorException('Failed to like post');
     }
   }
-  
 }

@@ -1,63 +1,104 @@
 <template>
-  <div class="h-screen bg-black text-white flex flex-col overflow-hidden">
-    <div>
+  <div>
+    <Sidebar v-model:visible="visible" class="bg-black text-white">
       <!-- Logo Section -->
-      <div class="flex items-center p-4">
-        <img src="../assets/logo2.png" alt="Logo" class="h-8 w-8 mr-2"/>
-        <h1 class="text-xl font-bold">Animerse</h1>
+      <div class="flex items-center p-4 hover:zoom-in">
+        <img src="../assets/logo2.png" alt="Logo" class="h-8 w-8 mr-2" />
+        <h1 class="text-xl font-bold font-poppins">Animerse</h1>
       </div>
       <!-- Navigation Links -->
       <nav class="mt-5">
         <ul>
-          <li class="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
-            <i class="pi pi-home"></i>
-            <span class="ml-4">Home</span>
+
+          <li class="flex items-center p-4 cursor-pointer hover:zoom-in">
+            <router-link to="/" class="flex items-center">
+              <i class="pi pi-home text-light-green"></i>
+              <span class="ml-4 font-poppins">Home</span>
+            </router-link>
           </li>
-          <li class="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
-            <i class="pi pi-search"></i>
-            <span class="ml-4">Explore</span>
+
+          <li class="flex items-center p-4 cursor-pointer hover:zoom-in">
+            <router-link to="/" class="flex items-center">
+              <i class="pi pi-search text-light-green"></i>
+              <span class="ml-4 font-poppins">Explore</span>
+            </router-link>
           </li>
-          <!-- Add more navigation links here -->
+
+
         </ul>
       </nav>
       <!-- User Profile Section -->
-      <div class="flex items-center p-4 hover:bg-gray-700 cursor-pointer">
-        <img :src="userProfilePic" alt="Profile" class="h-8 w-8 rounded-full"/>
-        <div class="ml-4">
-          <h2 class="text-sm font-semibold">{{ userName }}</h2>
-          <p class="text-xs text-gray-400">@{{ userName }}</p>
-        </div>
+      <div class="flex items-center p-4 cursor-pointer hover:zoom-in">
+        <router-link to="/profile" class="flex items-center">
+          <img :src="userProfilePic" alt="Profile" class="h-8 w-8 rounded-full" />
+          <div class="ml-4">
+            <h2 class="text-sm font-semibold font-poppins">{{ userName }}</h2>
+            <p class="text-xs text-gray-400 font-poppins">@{{ userName }}</p>
+          </div>
+        </router-link>
       </div>
-    </div>
+    </Sidebar>
+    <!-- Button to toggle Sidebar -->
+    <button class="p-button p-component" @click="visible = true">
+      <i class="pi pi-bars"></i>
+    </button>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import 'primeicons/primeicons.css';
+import Sidebar from 'primevue/sidebar';
+import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primevue/resources/primevue.min.css';
 import { authState } from '../auth';
 
-export default defineComponent({
-  name: 'Sidebar',
-  setup() {
-    const userName = ref<string>('');
-    const userProfilePic = ref<string>('');
-    const userHandle = ref<string>('');
+const visible = ref(false);
+const userName = ref<string>('');
+const userProfilePic = ref<string>('');
 
-    onMounted(() => {
-      if (authState.user) {
-        userName.value = authState.user.name;
-        userProfilePic.value = authState.user.avatar;
-      }
-    });
-
-    return {
-      userName,
-      userProfilePic,
-    };
+onMounted(() => {
+  if (authState.user) {
+    userName.value = authState.user.name;
+    userProfilePic.value = authState.user.avatar;
   }
 });
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.bg-black {
+  background-color: #000;
+}
+
+.text-white {
+  color: #fff;
+}
+
+.text-light-green {
+  color: #90ee90;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover\:zoom-in:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.router-link-active {
+  color: #90ee90;
+}
 </style>

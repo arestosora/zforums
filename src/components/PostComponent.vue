@@ -9,7 +9,7 @@
         <!-- Create Post Container -->
         <div class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
           <div class="header flex items-center mb-4">
-            <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || 'path/to/default/avatar.png'" alt="Avatar" />
+            <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || '../assets/avatar.png'" alt="Avatar" />
             <div class="user-info">
               <div class="flex items-center">
                 <span class="username font-bold">{{ authState.user?.name || 'Username' }}</span>
@@ -60,7 +60,7 @@
               <i class="pi pi-thumbs-up mr-1"></i>Like <span class="ml-1">{{ post.likes }}</span>
             </button>
             <button @click="navigateToComments(post.id!)" class="action-button hover:text-green-500">
-              <i class="pi pi-comments mr-1"></i>Comment <span class="ml-1">{{ post.comments.length }}</span>
+              <i class="pi pi-comments mr-1"></i>Comment <span class="ml-1">{{ post.comments!.length }}</span>
             </button>
             <button class="action-button hover:text-green-500">
               <i class="pi pi-share-alt mr-1"></i>Share
