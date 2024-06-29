@@ -116,6 +116,7 @@ onMounted(async () => {
       }
     });
     post.value = response.data;
+    console.log(response.data);
   } catch (err) {
     toast.add({ severity: 'error', summary: 'Error fetching post', detail: 'Please try again later.' });
     console.error(err);
@@ -155,16 +156,21 @@ onMounted(async () => {
 
 .header .user-info {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.header .username {
-  font-weight: bold;
+.add-comment {
+  position: sticky;
+  bottom: 20%;
+  width: 100%;
+  padding: 1rem; /* Ajusta el padding si es necesario */
+  background-color: #000; /* Fondo negro para el contenedor */
+  border-top: 1px solid #333; /* Añade un borde superior si es necesario */
 }
-
-.header .timestamp {
-  margin-left: 10px;
-  color: gray;
+.commentscontainer{
+  flex-direction: column;
+  margin-bottom: 15%;
 }
 
 .content {
