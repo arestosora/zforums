@@ -1,5 +1,11 @@
 <!-- src/components/PostComments.vue -->
 <template>
+    <div class="comments-header p-4 bg-black text-white">
+      <router-link to="/" class="back-button text-green-500">
+        <i class="pi pi-arrow-left mr-2"></i>Back
+      </router-link>
+    </div>
+
   <div class="post-comments">
     <div v-if="post">
       <div class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg">
@@ -18,15 +24,16 @@
           <img v-if="post.imageUrl" :src="post.imageUrl" alt="Post Image" class="post-image w-full rounded">
         </div>
       </div>
-
+      <div class="commentscontainer">
       <div class="comments">
         <h3 class="text-white mb-4">Comments</h3>
         <div v-for="comment in post.comments" :key="comment.id"
-          class="comment bg-gray-800 text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg">
+          class="comment bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg">
           <p>{{ comment.content }}</p>
           <span class="timestamp text-gray-500 text-sm">{{ formatDate(comment.createdAt) }}</span>
         </div>
       </div>
+    </div>
       <div class="add-comment bg-black text-white border border-gray-300 rounded-lg p-4 shadow-lg">
         <textarea v-model="newComment" class="w-full p-2 bg-black border rounded mb-4" rows="3"
           placeholder="Write a comment..."></textarea>
@@ -97,6 +104,7 @@ onMounted(async () => {
       }
     });
     post.value = response.data;
+    console.log(response.data);
   } catch (err) {
     toast.add({ severity: 'error', summary: 'Error fetching post', detail: 'Please try again later.' });
     console.error(err);
@@ -106,61 +114,27 @@ onMounted(async () => {
 
 <style scoped>
 .post-comments {
-  font-family: 'Arial', sans-serif;
-}
-
-.post {
-  margin-bottom: 20px;
-}
-
-.header .avatar {
-  border-radius: 50%;
-}
-
-.header .user-info {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.header .username {
-  font-weight: bold;
+.add-comment {
+  position: sticky;
+  bottom: 20%;
+  width: 100%;
+  padding: 1rem; /* Ajusta el padding si es necesario */
+  background-color: #000; /* Fondo negro para el contenedor */
+  border-top: 1px solid #333; /* Añade un borde superior si es necesario */
 }
-
-.header .timestamp {
-  margin-left: 10px;
-  color: gray;
+.commentscontainer{
+  flex-direction: column;
+  margin-bottom: 15%;
 }
-
-.content {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.action-button {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.action-button i {
-  margin-right: 5px;
-}
-
-.comments .comment {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
 .comments .comment .timestamp {
-  display: block;
-  color: gray;
-  font-size: 0.9em;
-  margin-top: 5px;
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 4rem;
 }
 
 .add-comment .submit-button {
