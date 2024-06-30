@@ -4,8 +4,9 @@
     <Sidebar />
 
     <!-- Main Content -->
-    <div class="main-content flex-1 flex flex-col">
-      <div class="posts-wrapper flex-1 flex flex-col overflow-y-auto pb-16">
+    <div class="main-content flex-1 flex">
+      <!-- Posts Wrapper -->
+      <div class="posts-wrapper flex-3 flex flex-col overflow-y-auto pb-16">
         <!-- Create Post Container -->
         <div class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
           <div class="header flex items-center mb-4">
@@ -71,6 +72,9 @@
         <!-- Extra space at the bottom -->
         <div class="bottom-gap"></div>
       </div>
+      
+      <!-- Import the NewsSection Component -->
+      <NewSection class="flex-1 ml-4" />
     </div>
   </div>
 </template>
@@ -84,6 +88,7 @@ import { format } from 'date-fns';
 import type { Post } from '@/interfaces/post';
 import Sidebar from './SidebarComponent.vue';
 import { useRouter } from 'vue-router';
+import NewSection from './NewSectionComponent.vue';
 
 const router = useRouter();
 const posts = ref<Post[]>([]);
@@ -231,7 +236,6 @@ const navigateToComments = (postId: number) => {
 
 .main-content {
   display: flex;
-  flex-direction: column;
   height: 100vh;
   font-family: 'Poppins', sans-serif;
 }
@@ -239,13 +243,14 @@ const navigateToComments = (postId: number) => {
 .posts-wrapper {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 3;
   overflow-y: auto;
-  padding-bottom: 4rem; /* Adjust the bottom padding as needed */
+  padding-bottom: 4rem;
+  margin-right: 0; 
 }
 
 .bottom-gap {
-  height: 4rem; /* Adjust the height to create the gap */
+  height: 4rem; 
 }
 
 .create-post-container {
