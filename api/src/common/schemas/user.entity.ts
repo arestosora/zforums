@@ -18,8 +18,14 @@ export class User {
   @Column({ nullable: false, select: false })
   password: string;
 
-  @Column({ nullable: true, default: true })
+  @Column({ nullable: true })
   avatar: string;
+
+  @Column({ nullable: true })
+  banner: string;
+
+  @Column({ nullable: true  })
+  bio: string;
 
   @Column({ type: 'enum', default: Role.USER, enum: Role })
   role: Role;

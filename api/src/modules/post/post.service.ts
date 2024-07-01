@@ -1,15 +1,19 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from 'src/common/schemas/post.entity';
 import { Repository } from 'typeorm';
 import { CreatePostDto, UpdatePostDto } from './post.dto';
 import { User } from 'src/common/schemas/user.entity';
+import { PostShare } from 'src/common/schemas/postShare.entity';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+
+    @InjectRepository(PostShare)
+    private readonly postShareRepository: Repository<PostShare>,
   ) {}
 
   async create(createPostDto: CreatePostDto, user: User): Promise<Post> {
@@ -63,6 +67,42 @@ export class PostService {
     } catch (error) {
       console.error('Error liking post:', error);
       throw new InternalServerErrorException('Failed to like post');
+    }
+  }
+
+  async getSharedPostsByUser(userId: number): Promise<Post[]> {
+    const postShares = await this.postShareRepository.find({
+      where: { userId },
+      relations: ['post', 'post.author', 'post.comments', 'post.comments.author'],
+    });
+
+    if (!postShares.length) {
+      throw new NotFoundException(`No shared posts found for user with ID ${userId}`);
+    }
+
+    return postShares.map(postShare => postShare.post);
+  }
+
+  async sharePost(postId: number, user: User): Promise<PostShare> {
+    const post = await this.findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with ID ${postId} not found`);
+    }
+
+    const existingShare = await this.postShareRepository.findOne({
+      where: { post: { id: postId }, user: { id: user.id } },
+    });
+
+    if (existingShare) {
+      throw new ConflictException('User has already shared this post');
+    }
+
+    const postShare = this.postShareRepository.create({ user, post });
+    try {
+      return await this.postShareRepository.save(postShare);
+    } catch (error) {
+      console.error('Error sharing post:', error);
+      throw new InternalServerErrorException('Failed to share post');
     }
   }
 }

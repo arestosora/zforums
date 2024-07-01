@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn, Column } from 'typeorm';
 import { User } from './user.entity';
 import { Post } from './post.entity';
 
@@ -6,6 +6,12 @@ import { Post } from './post.entity';
 export class PostShare {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  userId: number;
+
+  @Column()
+  postId: number;
 
   @ManyToOne(() => User, user => user.sharedPosts)
   user: User;

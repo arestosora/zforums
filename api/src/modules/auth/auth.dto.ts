@@ -19,12 +19,7 @@ export class LoginDto {
   
     @IsEmail()
     email: string;
-    
-    @Transform(({ value }) => value.trim())
-    @IsString()
-    @MinLength(1)
-    avatar: string;
-  
+
     @Transform(({ value }) => value.trim())
     @IsString()
     @MinLength(6)

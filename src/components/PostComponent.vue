@@ -63,7 +63,7 @@
             <button @click="navigateToComments(post.id!)" class="action-button hover:text-green-500">
               <i class="pi pi-comments mr-1"></i>Comment <span class="ml-1">{{ post.comments!.length }}</span>
             </button>
-            <button class="action-button hover:text-green-500">
+            <button @click="sharePost(post.id!)" class="action-button hover:text-green-500">
               <i class="pi pi-share-alt mr-1"></i>Share
             </button>
           </div>
@@ -228,6 +228,21 @@ const handleFileUpload = async (event: Event) => {
 
 const navigateToComments = (postId: number) => {
   router.push({ name: 'postComments', params: { id: postId } });
+};
+
+const sharePost = async (postId: number) => {
+  try {
+    await axios.post(`/posts/${postId}/share`, {}, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
+
+    toast.add({ severity: 'success', summary: 'Post Shared', detail: 'The post has been shared successfully.' });
+  } catch (err) {
+    toast.add({ severity: 'error', summary: 'Error Sharing Post', detail: 'Please try again later.' });
+    console.error(err);
+  }
 };
 </script>
 
