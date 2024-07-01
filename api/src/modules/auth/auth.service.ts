@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { UsersService } from 'src/modules/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcryptjs from 'bcryptjs';
-import { RegisterDto, LoginDto } from './auth.dto';
+import { RegisterDto, LoginDto, UpdateProfileDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +11,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async register({ name, email, password }: RegisterDto) {
+  async register({ name, email, password, avatar }: RegisterDto) {
     const user = await this.usersService.findOneByEmail(email);
 
     if (user) {
@@ -21,6 +21,7 @@ export class AuthService {
     await this.usersService.create({
       name,
       email,
+      avatar,
       password: await bcryptjs.hash(password, 10),
     });
 
@@ -58,5 +59,17 @@ export class AuthService {
 
   async profile({ email }: { email: string; role: string }) {
     return await this.usersService.findOneByEmail(email);
+  }
+
+  async updateProfile(userId: number, updateProfileDto: UpdateProfileDto) {
+    const user = await this.usersService.findOneById(userId);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    await this.usersService.update(userId, updateProfileDto);
+
+    return this.usersService.findOneById(userId);
   }
 }

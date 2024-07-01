@@ -74,14 +74,18 @@ export class PostService {
     const postShares = await this.postShareRepository.find({
       where: { userId },
       relations: ['post', 'post.author', 'post.comments', 'post.comments.author'],
+      order: {
+        sharedAt: 'DESC'
+      },
     });
-
+  
     if (!postShares.length) {
       throw new NotFoundException(`No shared posts found for user with ID ${userId}`);
     }
-
+  
     return postShares.map(postShare => postShare.post);
   }
+  
 
   async sharePost(postId: number, user: User): Promise<PostShare> {
     const post = await this.findOne(postId);

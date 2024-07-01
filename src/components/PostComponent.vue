@@ -240,7 +240,7 @@ const sharePost = async (postId: number) => {
 
     toast.add({ severity: 'success', summary: 'Post Shared', detail: 'The post has been shared successfully.' });
   } catch (err) {
-    toast.add({ severity: 'error', summary: 'Error Sharing Post', detail: 'Please try again later.' });
+    toast.add({ severity: 'error', summary: 'Error Sharing Post', detail: 'You have shared this post already.' });
     console.error(err);
   }
 };

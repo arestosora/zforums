@@ -1,28 +1,47 @@
-import { Transform } from "class-transformer";
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+
+export class RegisterDto {
+  @IsString()
+  name: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(6)
+  password: string;
+
+  @IsString()
+  @IsOptional()
+  avatar?: string;
+}
 
 export class LoginDto {
-    @IsEmail()
-    email: string;
-  
-    @Transform(({ value }) => value.trim())
-    @IsString()
-    @MinLength(6)
-    password: string;
-  }
-  
-  export class RegisterDto {
-    @Transform(({ value }) => value.trim())
-    @IsString()
-    @MinLength(1)
-    name: string;
-  
-    @IsEmail()
-    email: string;
+  @IsEmail()
+  email: string;
 
-    @Transform(({ value }) => value.trim())
-    @IsString()
-    @MinLength(6)
-    password: string;
-  }
-  
+  @IsString()
+  password: string;
+}
+
+export class UpdateProfileDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsEmail()
+  @IsOptional()
+  email?: string;
+
+  @IsString()
+  @IsOptional()
+  bio?: string;
+
+  @IsString()
+  @IsOptional()
+  avatar?: string;
+
+  @IsString()
+  @IsOptional()
+  banner?: string;
+}

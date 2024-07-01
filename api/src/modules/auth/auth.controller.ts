@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put } from '@nestjs/common';
 import { ActiveUser } from 'src/common/decorators/active-user.decorator';
 import { UserActiveInterface } from 'src/common/interfaces/user-active.interface';
 import { AuthService } from './auth.service';
 import { Role } from 'src/common/enums/rol.enum';
 import { Auth } from 'src/decorators/auth.decorator';
-import { RegisterDto, LoginDto } from './auth.dto';
+import { RegisterDto, LoginDto, UpdateProfileDto } from './auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,5 +31,14 @@ export class AuthController {
   profile(@ActiveUser() user: UserActiveInterface) {
     console.log(user)
     return this.authService.profile(user);
+  }
+
+  @Put('update-profile')
+  @Auth(Role.USER)
+  updateProfile(
+    @ActiveUser() user: UserActiveInterface,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    return this.authService.updateProfile(user.id, updateProfileDto);
   }
 }
