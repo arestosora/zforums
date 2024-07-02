@@ -15,7 +15,8 @@
             <div class="user-info">
               <div class="flex items-center">
                 <span class="username font-bold">{{ post.author.name }}</span>
-                <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author.username }} · {{ formatDate(post.createdAt) }}</span>
+                <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author.username }} · {{
+                  formatDate(post.createdAt) }}</span>
               </div>
             </div>
           </div>
@@ -27,7 +28,8 @@
 
         <!-- Comments Section -->
         <div class="comments">
-          <div v-for="comment in sortedComments" :key="comment.id" class="comment bg-transparent text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg">
+          <div v-for="comment in sortedComments" :key="comment.id"
+            class="comment bg-transparent text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg">
             <div class="header flex items-center mb-2">
               <img class="avatar w-8 h-8 rounded-full mr-3" :src="comment.author.avatar" alt="Avatar" />
               <div class="user-info">
@@ -41,9 +43,11 @@
 
         <!-- Add Comment Section -->
         <div class="add-comment bg-black text-white rounded-lg p-2 shadow-lg">
-          <textarea v-model="newComment" class="w-full p-2 bg-black mb-2 placeholder-gray-500 text-white" rows="3" placeholder="Write a comment..."></textarea>
+          <textarea v-model="newComment" class="w-full p-2 bg-black mb-2 placeholder-gray-500 text-white" rows="3"
+            placeholder="Write a comment..."></textarea>
           <div class="actions flex justify-end">
-            <button @click="submitComment" class="submit-button text-light-green border border-gray-700 px-4 py-2 rounded">
+            <button @click="submitComment"
+              class="submit-button text-light-green border border-gray-700 px-4 py-2 rounded">
               Submit
             </button>
           </div>
@@ -59,8 +63,8 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { useToast } from 'primevue/usetoast';
-import { authState } from '../auth';
-import SidebarComponent from './SidebarComponent.vue';
+import { authState } from '../utils/auth';
+import SidebarComponent from '@/components/SidebarComponent.vue';
 
 const route = useRoute();
 const toast = useToast();
@@ -140,9 +144,9 @@ onMounted(async () => {
 
 .post-comments-container {
   width: 50%;
-  max-height: calc(100vh - 2rem); 
+  max-height: calc(100vh - 2rem);
   overflow-y: auto;
-  padding-bottom: 4rem; 
+  padding-bottom: 4rem;
 }
 
 .post {
@@ -202,7 +206,7 @@ onMounted(async () => {
 }
 
 .add-comment {
-  padding: 0.5rem; 
+  padding: 0.5rem;
 }
 
 .add-comment .submit-button {

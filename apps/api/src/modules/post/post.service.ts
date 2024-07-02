@@ -78,11 +78,6 @@ export class PostService {
         sharedAt: 'DESC'
       },
     });
-  
-    if (!postShares.length) {
-      throw new NotFoundException(`No shared posts found for user with ID ${userId}`);
-    }
-  
     return postShares.map(postShare => postShare.post);
   }
   

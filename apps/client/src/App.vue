@@ -1,30 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { RouterLink, RouterView } from 'vue-router';
 import HeaderComponent from './components/HeaderComponent.vue';
-import FooterComponent from './components/FooterComponent.vue';
-import LoginComponent from './components/LoginComponent.vue';
-import LoadingScreen from './components/LoadingScreenComponent.vue';
-import { isLoading } from './loadingState';
-const isModalOpen = ref(false);
-
-const openModal = () => {
-  isModalOpen.value = true;
-};
-
-const closeModal = () => {
-  isModalOpen.value = false;
-};
 </script>
 
 <template>
-  <div class="app-container background-image text-white flex flex-col min-h-screen">
-    <LoadingScreen v-if="isLoading" />
-    <HeaderComponent @open-login-modal="openModal" />
-    <main class="flex-grow p-6 overflow-auto">
+  <div class="app-container flex flex-col min-h-screen">
+    <HeaderComponent />
+    <main class="flex-grow p-6 overflow-hidden">
       <router-view />
     </main>
-    <FooterComponent />
-    <LoginComponent :isOpen="isModalOpen" @close="closeModal" />
   </div>
 </template>
 
@@ -32,14 +16,16 @@ const closeModal = () => {
 .app-container {
   display: flex;
   flex-direction: column;
-  height: fit-content;
+  height: 100vh;
+  background: black;
+  overflow: hidden;
 }
+</style>
 
-.background-image {
-  background-image: url('@/assets/background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  flex: 1;
+<style>
+
+body {
+  overflow: hidden;
+  margin: 0;
 }
 </style>

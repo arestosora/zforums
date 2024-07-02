@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Sidebar v-model:visible="visible" class="bg-black text-white">
+    <Sidebar v-model:visible="visible" class="text-white">
       <!-- Logo Section -->
       <div class="flex items-center p-4 hover:zoom-in">
         <img src="../assets/logo2.png" alt="Logo" class="h-8 w-8 mr-2" />
-        <h1 class="text-xl font-bold font-poppins">Animerse</h1>
+        <h1 class="text-xl font-bold font-poppins">Z Forums</h1>
       </div>
       <!-- Navigation Links -->
       <nav class="mt-5">
@@ -23,8 +23,6 @@
               <span class="ml-4 font-poppins">Explore</span>
             </router-link>
           </li>
-
-
         </ul>
       </nav>
       <!-- User Profile Section -->
@@ -40,18 +38,15 @@
     </Sidebar>
     <!-- Button to toggle Sidebar -->
     <button class="p-button p-component" @click="visible = true">
-      <i class="pi pi-bars"></i>
+      <i class="pi pi-bars icon-white"></i>
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import 'primeicons/primeicons.css';
 import Sidebar from 'primevue/sidebar';
-import 'primevue/resources/themes/saga-blue/theme.css';
-import 'primevue/resources/primevue.min.css';
-import { authState } from '../auth';
+import { authState } from '../utils/auth';
 
 const visible = ref(false);
 const userName = ref<string>('');
@@ -72,14 +67,6 @@ onMounted(() => {
   font-family: 'Poppins', sans-serif;
 }
 
-.bg-black {
-  background-color: #000;
-}
-
-.text-white {
-  color: #fff;
-}
-
 .text-light-green {
   color: #90ee90;
 }
@@ -93,12 +80,11 @@ onMounted(() => {
   transition: transform 0.2s;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
 .router-link-active {
   color: #90ee90;
+}
+
+.icon-white {
+  color: white;
 }
 </style>

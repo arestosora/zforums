@@ -1,6 +1,5 @@
 <template>
   <div class="news-section p-4">
-    <h2 class="text-xl font-semibold mb-6">Latest News</h2>
     <div v-for="news in newsList" :key="news.id" class="news-item mb-4 p-4 border border-gray-300 rounded-md shadow-sm">
       <img :src="news.image" alt="News image" class="news-image mb-4 w-full h-auto object-cover rounded-md"/>
       <h3 class="text-lg font-semibold">{{ news.title }}</h3>
@@ -13,8 +12,8 @@
 import { ref } from 'vue';
 
 const newsList = ref([
-  { id: 1, title: 'News 1', content: 'This is the content for news 1.', image: '../assets/img2.png' },
-  { id: 2, title: 'News 2', content: 'This is the content for news 2.', image: 'image.png' },
+  { id: 1, title: 'New Mushuku Tensei Movie?', content: 'This new installment was produced by Studio Bind, with Ryōsuke Shibuya, assistant director of the first part, in charge of directing. On the other hand, Toshiya Ōno was responsible for the script.', image: '../../public/mushoku.jpg' },
+  { id: 2, title: 'Is the new Elden Ring DLC, Too hard?', content: 'The great debate surrounding Shadow of the Erdtree, the Elden Ring DLC, has been focused on its difficulty. Specifically, it centers on certain bosses like Messmer or the one that concludes the expansion.', image: 'https://www.enter.co/wp-content/uploads/2024/06/elden_ring_shadow_erdtree_details.jpg'  },
 ]);
 </script>
 
@@ -26,6 +25,23 @@ const newsList = ref([
   overflow-y: auto;
   color: white;
   border-left: 1px solid #444;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #333;
+}
+
+.news-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.news-section::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 10px;
+}
+
+.news-section::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: 2px solid #333;
 }
 
 .news-section h2 {
