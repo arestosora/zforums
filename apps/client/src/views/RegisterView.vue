@@ -1,5 +1,6 @@
 <template>
   <div class="flex h-screen w-full relative">
+    <LoadingComponent :visible="isLoading" />
     <div :class="{ 'blur-sm': isLoading }" class="flex-1 flex items-center justify-center bg-gray-200 overflow-hidden">
       <img src="../assets/image.webp" alt="Imagen de la izquierda" class="w-full h-full object-cover" />
     </div>
@@ -48,10 +49,13 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { showSuccessAlert, showErrorAlert } from '@/utils/fireAlert';
+import LoadingComponent from '@/components/LoadingComponent.vue';
 
 export default {
   name: 'RegisterForm',
-
+  components: {
+    LoadingComponent,
+  },
   setup() {
     const form = ref({
       name: '',

@@ -1,5 +1,6 @@
 <template>
   <div class="flex h-screen w-full">
+    <LoadingComponent :visible="isLoading" />
     <div :class="{ 'blur-sm': isLoading }" class="flex-1 flex items-center justify-center bg-gray-200 overflow-hidden">
       <img src="../assets/image.webp" alt="Imagen de la izquierda" class="w-full h-full object-cover" />
     </div>
@@ -30,10 +31,13 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { login } from '@/utils/auth';
 import { showSuccessAlert, showErrorAlert } from '@/utils/fireAlert';
+import LoadingComponent from '@/components/LoadingComponent.vue';
 
 export default {
   name: 'LoginForm',
-
+  components: {
+    LoadingComponent,
+  },
   setup() {
     const form = ref({
       email: '',
@@ -42,12 +46,10 @@ export default {
 
     const isLoading = ref(false);
     const router = useRouter();
-
     const handleLogin = async () => {
       isLoading.value = true;
       try {
         await login({ email: form.value.email, password: form.value.password });
-        showSuccessAlert('Login successful, welcome back!');
         router.push('/');
       } catch (error) {
         showErrorAlert('Error during login, please try again.');
@@ -55,7 +57,8 @@ export default {
       } finally {
         setTimeout(() => {
           isLoading.value = false;
-        }, 3000);
+        }, 2000);
+        showSuccessAlert('Login successful, welcome back!');
       }
     };
 
