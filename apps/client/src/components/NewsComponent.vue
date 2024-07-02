@@ -12,7 +12,7 @@
 import { ref } from 'vue';
 
 const newsList = ref([
-  { id: 1, title: 'New Mushuku Tensei Movie?', content: 'This new installment was produced by Studio Bind, with Ryōsuke Shibuya, assistant director of the first part, in charge of directing. On the other hand, Toshiya Ōno was responsible for the script.', image: '../../public/mushoku.jpg' },
+  { id: 1, title: 'New Mushuku Tensei Movie?', content: 'This new installment was produced by Studio Bind, with Ryōsuke Shibuya, assistant director of the first part, in charge of directing. On the other hand, Toshiya Ōno was responsible for the script.', image: 'https://a.storyblok.com/f/178900/1920x1080/22d162c483/mushoku-tensei-jobless-reincarnation.png/m/1200x0/filters:quality(95)format(webp)' },
   { id: 2, title: 'Is the new Elden Ring DLC, Too hard?', content: 'The great debate surrounding Shadow of the Erdtree, the Elden Ring DLC, has been focused on its difficulty. Specifically, it centers on certain bosses like Messmer or the one that concludes the expansion.', image: 'https://www.enter.co/wp-content/uploads/2024/06/elden_ring_shadow_erdtree_details.jpg'  },
 ]);
 </script>
