@@ -16,6 +16,6 @@ async function main() {
   );
   app.enableCors();
 
-  await app.listen(8000);
+  await app.listen(3000);
 }
 main();
