@@ -47,6 +47,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { showSuccessAlert, showErrorAlert } from '@/utils/fireAlert';
 
 export default {
   name: 'RegisterForm',
@@ -97,8 +98,10 @@ export default {
       try {
         const response = await axios.post('/auth/register', { ...form.value });
         console.log(response.data);
+        showSuccessAlert('You have registered successfully!');
         router.push('/');
       } catch (error) {
+        showErrorAlert('Error registering, please try again later.');
         console.error(error);
       } finally {
         setTimeout(() => {

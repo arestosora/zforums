@@ -29,6 +29,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { login } from '@/utils/auth';
+import { showSuccessAlert, showErrorAlert } from '@/utils/fireAlert';
 
 export default {
   name: 'LoginForm',
@@ -46,8 +47,10 @@ export default {
       isLoading.value = true;
       try {
         await login({ email: form.value.email, password: form.value.password });
+        showSuccessAlert('Login successful, welcome back!');
         router.push('/');
       } catch (error) {
+        showErrorAlert('Error during login, please try again.');
         console.error('Error during login:', error);
       } finally {
         setTimeout(() => {

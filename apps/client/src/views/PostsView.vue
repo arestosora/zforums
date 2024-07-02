@@ -7,6 +7,9 @@
     
     <!-- Main Container -->
     <div class="flex flex-col lg:flex-row justify-center items-start w-full max-w-screen-lg mx-auto mt-4 lg:mt-0">
+      <!-- Loading component -->
+      <LoadingComponent :visible="isLoading" />
+
       <!-- Main Content -->
       <div class="main-content flex-1 flex custom-width mx-auto">
         <!-- Posts Wrapper -->
@@ -84,42 +87,47 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import { useToast } from 'primevue/usetoast';
 import { authState } from '../utils/auth';
 import { format } from 'date-fns';
 import type { Post } from '../types/Post';
 import SidebarComponent from '@/components/SidebarComponent.vue';
 import { useRouter } from 'vue-router';
 import NewsComponent from '@/components/NewsComponent.vue';
-
+import { showErrorAlert, showSuccessAlert } from '@/utils/fireAlert';
+import LoadingComponent from '@/components/LoadingComponent.vue';
+import Swal from 'sweetalert2';
+const isLoading = ref(false);
 const router = useRouter();
 const posts = ref<Post[]>([]);
 const newPostContent = ref('');
 const newPostImageUrl = ref('');
-const toast = useToast();
 const fileInput = ref<HTMLInputElement | null>(null);
 
 onMounted(async () => {
+  isLoading.value = true;
   if (!authState.token) {
-      toast.add({ severity: 'error', summary: 'Session Expired', detail: 'Please log in again.' });
-      return;
+    showErrorAlert('Session Expired. Please log in again.');
+    isLoading.value = false;
+    return;
   }
 
   try {
-      const response = await axios.get('/posts', {
-          headers: {
-              'Accept': 'application/json',
-              'Authorization': `Bearer ${authState.token}`
-          }
-      });
-      posts.value = response.data.map((post: Post) => ({
-          ...post,
-          liked: false
-      })).sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
-      console.log('Data received:', response.data);
+    const response = await axios.get('/posts', {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
+    posts.value = response.data.map((post: Post) => ({
+      ...post,
+      liked: false
+    })).sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+    console.log('Data received:', response.data);
   } catch (err) {
-      toast.add({ severity: 'error', summary: 'Error fetching posts', detail: 'Please try again later.' });
-      console.error(err);
+    showErrorAlert('Error fetching posts. Please try again later.');
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -134,68 +142,89 @@ const formatDate = (dateStr: string) => {
 const createPost = async () => {
   if (!newPostContent.value) return;
 
+  isLoading.value = true;
   try {
-      const response = await axios.post('/posts', {
-          title: 'New Post',
-          content: newPostContent.value,
-          imageUrl: newPostImageUrl.value
-      }, {
-          headers: {
-              'Authorization': `Bearer ${authState.token}`
-          }
-      });
+    const response = await axios.post('/posts', {
+      title: 'New Post',
+      content: newPostContent.value,
+      imageUrl: newPostImageUrl.value
+    }, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
 
-      posts.value.unshift({
-          ...response.data,
-          liked: false
-      });
-      newPostContent.value = '';
-      newPostImageUrl.value = '';
-
+    posts.value.unshift({
+      ...response.data,
+      liked: false
+    });
+    newPostContent.value = '';
+    newPostImageUrl.value = '';
+    setTimeout(() => {
       location.reload();
+    }, 500);
   } catch (err) {
-      toast.add({ severity: 'error', summary: 'Error creating post', detail: 'Please try again later.' });
-      console.error(err);
+    showErrorAlert('Error creating post. Please try again later.');
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 
 const deletePost = async (postId: number) => {
+  isLoading.value = true;
   try {
-      await axios.delete(`/posts/${postId}`, {
-          headers: {
-              'Authorization': `Bearer ${authState.token}`
-          }
-      });
-      posts.value = posts.value.filter(post => post.id !== postId);
+    await axios.delete(`/posts/${postId}`, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
+    posts.value = posts.value.filter(post => post.id !== postId);
+    showSuccessAlert('Post deleted successfully');
   } catch (err) {
-      toast.add({ severity: 'error', summary: 'Error deleting post', detail: 'Please try again later.' });
-      console.error(err);
+    showErrorAlert('Error deleting post. Please try again later.');
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 
 const editPost = (postId: number) => {
-  toast.add({ severity: 'info', summary: 'Edit Post', detail: 'Feature coming soon!' });
+  Swal.fire({
+    icon: 'info',
+    title: 'Edit Post',
+    text: 'Feature coming soon!',
+    showConfirmButton: false,
+    timer: 1000,
+    customClass: {
+      popup: 'swal2-popup',
+      title: 'swal2-title'
+    }
+  });
 };
 
 const toggleLike = async (post: Post) => {
+  isLoading.value = true;
   try {
-      await axios.patch(`/posts/${post.id}/like`, {}, {
-          headers: {
-              'Authorization': `Bearer ${authState.token}`
-          }
-      });
+    await axios.patch(`/posts/${post.id}/like`, {}, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
 
-      post.liked = !post.liked;
-      post.likes! += post.liked ? 1 : -1;
+    post.liked = !post.liked;
+    post.likes! += post.liked ? 1 : -1;
   } catch (err) {
-      toast.add({ severity: 'error', summary: 'Error liking post', detail: 'Please try again later.' });
-      console.error(err);
+    showErrorAlert('Error liking post. Please try again later.');
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 
 const triggerFileInput = () => {
   if (fileInput.value) {
-      fileInput.value.click();
+    fileInput.value.click();
   }
 };
 
@@ -203,6 +232,7 @@ const handleFileUpload = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
 
+  isLoading.value = true;
   const formData = new FormData();
   formData.append('file', file);
 
@@ -215,16 +245,18 @@ const handleFileUpload = async (event: Event) => {
   formData.append('timestamp', timestamp.toString());
 
   try {
-      const response = await axios.post('https://api.cloudinary.com/v1_1/dijbgmxrh/image/upload', formData, {
-          headers: {
-              'Content-Type': 'multipart/form-data'
-          }
-      });
+    const response = await axios.post('https://api.cloudinary.com/v1_1/dijbgmxrh/image/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
 
-      newPostImageUrl.value = response.data.secure_url;
+    newPostImageUrl.value = response.data.secure_url;
   } catch (err) {
-      toast.add({ severity: 'error', summary: 'Error uploading image', detail: 'Please try again later.' });
-      console.error(err);
+    showErrorAlert('Error uploading image. Please try again later.');
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -233,17 +265,20 @@ const navigateToComments = (postId: number) => {
 };
 
 const sharePost = async (postId: number) => {
+  isLoading.value = true;
   try {
-      await axios.post(`/posts/${postId}/share`, {}, {
-          headers: {
-              'Authorization': `Bearer ${authState.token}`
-          }
-      });
+    await axios.post(`/posts/${postId}/share`, {}, {
+      headers: {
+        'Authorization': `Bearer ${authState.token}`
+      }
+    });
 
-      toast.add({ severity: 'success', summary: 'Post Shared', detail: 'The post has been shared successfully.' });
+    showSuccessAlert('Post shared successfully');
   } catch (err) {
-      toast.add({ severity: 'error', summary: 'Error Sharing Post', detail: 'You have shared this post already.' });
-      console.error(err);
+    showErrorAlert('You have shared this post already.');
+    console.error(err);
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>

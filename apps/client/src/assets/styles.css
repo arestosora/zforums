@@ -1,0 +1,27 @@
+/* assets/styles.css */
+
+.swal2-popup {
+    background: rgba(0, 0, 0, 0.8) !important; /* Fondo transparente */
+    border: none !important; /* Sin bordes */
+  }
+  
+  .swal2-title {
+    color: #90ee90; /* Color del texto */
+  }
+  
+  .swal2-content {
+    color: #ffffff; /* Color del contenido */
+  }
+  
+  .swal2-actions .swal2-confirm, .swal2-actions .swal2-cancel {
+    background-color: #22c55e; /* Color de fondo del botón */
+    color: #ffffff; /* Color del texto del botón */
+    border: none; /* Sin bordes */
+    padding: 10px 20px; /* Padding del botón */
+    font-weight: bold; /* Negrita */
+  }
+  
+  .swal2-actions .swal2-confirm:hover, .swal2-actions .swal2-cancel:hover {
+    background-color: #16a34a; /* Color del botón al pasar el ratón */
+  }
+  

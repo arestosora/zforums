@@ -78,8 +78,10 @@ export class PostService {
         sharedAt: 'DESC'
       },
     });
-    return postShares.map(postShare => postShare.post);
+  
+    return postShares.map(postShare => postShare.post).filter(post => post !== null);
   }
+  
   
 
   async sharePost(postId: number, user: User): Promise<PostShare> {

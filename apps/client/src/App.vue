@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router';
+import { ref } from 'vue';
+import { RouterView } from 'vue-router';
 import HeaderComponent from './components/HeaderComponent.vue';
+import LoadingComponent from './components/LoadingComponent.vue';
+const isLoading = ref(false);
 </script>
 
 <template>
   <div class="app-container flex flex-col min-h-screen">
     <HeaderComponent />
+    <LoadingComponent :visible="isLoading" />
     <main class="flex-grow p-6 overflow-hidden">
-      <router-view />
+      <router-view @loading="isLoading = $event" />
     </main>
   </div>
 </template>
@@ -23,7 +27,6 @@ import HeaderComponent from './components/HeaderComponent.vue';
 </style>
 
 <style>
-
 body {
   overflow: hidden;
   margin: 0;

@@ -62,12 +62,11 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { useToast } from 'primevue/usetoast';
 import { authState } from '../utils/auth';
 import SidebarComponent from '@/components/SidebarComponent.vue';
-
+import { showSuccessAlert, showErrorAlert } from '@/utils/fireAlert';
 const route = useRoute();
-const toast = useToast();
+
 const post = ref();
 const newComment = ref('');
 
@@ -89,10 +88,11 @@ const submitComment = async () => {
     });
 
     post.value.comments.push(response.data);
+    showSuccessAlert('Comment submitted successfully!');
     newComment.value = '';
     window.location.reload();
   } catch (err) {
-    toast.add({ severity: 'error', summary: 'Error submitting comment', detail: 'Please try again later.' });
+    showErrorAlert('Error submitting comment, please try again later.');
     console.error(err);
   }
 };
@@ -107,7 +107,7 @@ const sortedComments = computed(() => {
 
 onMounted(async () => {
   if (!authState.token) {
-    toast.add({ severity: 'error', summary: 'Session Expired', detail: 'Please log in again.' });
+    showErrorAlert('Your session has expired. You need to be logged in to view this page.');
     return;
   }
 
@@ -121,7 +121,7 @@ onMounted(async () => {
     });
     post.value = response.data;
   } catch (err) {
-    toast.add({ severity: 'error', summary: 'Error fetching post', detail: 'Please try again later.' });
+    showErrorAlert('Error fetching post, please try again later.');
     console.error(err);
   }
 });

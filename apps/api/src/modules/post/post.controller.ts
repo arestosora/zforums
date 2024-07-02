@@ -114,7 +114,6 @@ export class PostController {
       const postShare = await this.postService.sharePost(postId, user);
       return postShare;
     } catch (error) {
-      console.error('Error sharing post:', error);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
