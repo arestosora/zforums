@@ -1,5 +1,6 @@
 import { ref, type Ref } from 'vue';
 import { showErrorAlert } from '@/utils/fireAlert';
+import { config } from '@/utils/config';
 
 export const useFileUpload = (externalIsLoading: Ref<boolean>) => {
     const newPostImageUrl = ref<string | null>(null);
@@ -9,9 +10,9 @@ export const useFileUpload = (externalIsLoading: Ref<boolean>) => {
       const formData = new FormData();
       formData.append('file', file);
   
-      const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-      const apiKey = import.meta.env.VITE_CLOUDINARY_API_KEY;
-      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = config.Cloudinary.preset;
+      const apiKey = config.Cloudinary.apiKey;
+      const cloudName = config.Cloudinary.cloudName;
       const timestamp = Math.floor(Date.now() / 1000);
   
       formData.append('upload_preset', uploadPreset);

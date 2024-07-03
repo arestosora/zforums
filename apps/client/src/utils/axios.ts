@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { authState } from "@/utils/auth";
+import { config } from './config';
 
-axios.defaults.baseURL = `${import.meta.env.VITE_API_URL}/api/v1`;
+axios.defaults.baseURL = `${config.api.baseUrl}/api/v1`;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.common['Accept'] = 'application/json';
 
