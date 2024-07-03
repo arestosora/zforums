@@ -318,7 +318,7 @@ const navigateToComments = (postId: number) => {
 
 .main-container {
   position: relative;
-  top: -50px;
+  height: 90vh;
 }
 
 .text-beige {
