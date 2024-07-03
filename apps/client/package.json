@@ -15,6 +15,7 @@
     "@primevue/themes": "4.0.0-rc.2",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
+    "ky": "^1.4.0",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "4.0.0-rc.2",

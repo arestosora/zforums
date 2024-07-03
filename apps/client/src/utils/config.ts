@@ -5,6 +5,6 @@ export const config = {
     Cloudinary: {
         cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
         apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY,
-        preset: import.meta.env.VITE_CLOUDINARY_PRESET,
+        preset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
     }
 }
