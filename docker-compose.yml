@@ -24,7 +24,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: animerse
+      POSTGRES_DB: zforums
     volumes:
       - pgdata:/var/lib/postgresql/data
 
