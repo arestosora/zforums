@@ -35,7 +35,7 @@
               <img v-if="newPostImageUrl" :src="newPostImageUrl" alt="Selected Image" class="selected-image w-full rounded mb-4">
             </div>
             <div class="actions flex justify-end text-gray-500">
-              <button @click="createPost" class="create-post-button hover:text-green-500">
+              <button @click="handleCreatePost" class="create-post-button hover:text-green-500">
                 <i class="pi pi-plus mr-2"></i>Post
               </button>
             </div>
@@ -53,7 +53,7 @@
                 <button @click="editPost(post.id!)" class="edit-button hover:text-blue-500 mr-2">
                   <i class="pi pi-pencil"></i>
                 </button>
-                <button @click="deletePost(post.id!)" class="delete-button hover:text-red-500">
+                <button @click="handleDeletePost(post.id!)" class="delete-button hover:text-red-500">
                   <i class="pi pi-trash"></i>
                 </button>
               </div>
@@ -63,13 +63,13 @@
               <img v-if="post.imageUrl" :src="post.imageUrl" alt="Post Image" class="post-image w-full rounded">
             </div>
             <div class="actions flex justify-between text-gray-500">
-              <button @click="toggleLike(post)" :class="{'text-green-500': post.liked, 'text-gray-500': !post.liked}" class="action-button hover:text-green-500">
+              <button @click="handleToggleLike(post)" :class="{'text-green-500': post.liked, 'text-gray-500': !post.liked}" class="action-button hover:text-green-500">
                 <i class="pi pi-thumbs-up mr-1"></i>Like <span class="ml-1">{{ post.likes }}</span>
               </button>
               <button @click="navigateToComments(post.id!)" class="action-button hover:text-green-500">
                 <i class="pi pi-comments mr-1"></i>Comment <span class="ml-1">{{ post.comments!.length }}</span>
               </button>
-              <button @click="sharePost(post.id!)" class="action-button hover:text-green-500">
+              <button @click="handleSharePost(post.id!)" class="action-button hover:text-green-500">
                 <i class="pi pi-share-alt mr-1"></i>Share
               </button>
             </div>
@@ -86,18 +86,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import { useRouter } from 'vue-router';
 import { authState } from '../utils/auth';
-import {formatDate} from '@/services/utils';
+import { formatDate } from '@/services/utils';
 import type { Post } from '../types/Post';
 import SidebarComponent from '@/components/SidebarComponent.vue';
-import { useRouter } from 'vue-router';
 import NewsComponent from '@/components/NewsComponent.vue';
 import { showErrorAlert, showSuccessAlert } from '@/utils/fireAlert';
 import LoadingComponent from '@/components/LoadingComponent.vue';
-import Swal from 'sweetalert2';
-import { Request } from '@/services/request';
 import { useFileUpload } from '@/services/uploadService';
+import { getPosts, createPost, deletePost, toggleLike, sharePost } from '@/services/PostService';
+
 const isLoading = ref(false);
 const router = useRouter();
 const posts = ref<Post[]>([]);
@@ -114,12 +113,12 @@ onMounted(async () => {
   }
 
   try {
-    const response = await Request.get('/posts');
-    posts.value = response.data.map((post: Post) => ({
+    const data = await getPosts();
+    posts.value = data.map(post => ({
       ...post,
       liked: false
-    })).sort((a: Post, b: Post) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
-    console.log('Data received:', response.data);
+    })).sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+    console.log('Data received:', data);
   } catch (err) {
     showErrorAlert('Error fetching posts. Please try again later.');
     console.error(err);
@@ -132,23 +131,14 @@ const sortedPosts = computed(() => {
   return posts.value.slice().sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
 });
 
-const createPost = async () => {
+const handleCreatePost = async () => {
   if (!newPostContent.value) return;
 
   isLoading.value = true;
   try {
-    const response = await axios.post('/posts', {
-      title: 'New Post',
-      content: newPostContent.value,
-      imageUrl: newPostImageUrl.value
-    }, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
-
+    const newPost = await createPost(newPostContent.value, newPostImageUrl.value!);
     posts.value.unshift({
-      ...response.data,
+      ...newPost,
       liked: false
     });
     newPostContent.value = '';
@@ -164,14 +154,10 @@ const createPost = async () => {
   }
 };
 
-const deletePost = async (postId: number) => {
+const handleDeletePost = async (postId: number) => {
   isLoading.value = true;
   try {
-    await axios.delete(`/posts/${postId}`, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
+    await deletePost(postId);
     posts.value = posts.value.filter(post => post.id !== postId);
     showSuccessAlert('Post deleted successfully');
   } catch (err) {
@@ -182,29 +168,10 @@ const deletePost = async (postId: number) => {
   }
 };
 
-const editPost = (postId: number) => {
-  Swal.fire({
-    icon: 'info',
-    title: 'Edit Post',
-    text: 'Feature coming soon!',
-    showConfirmButton: false,
-    timer: 1000,
-    customClass: {
-      popup: 'swal2-popup',
-      title: 'swal2-title'
-    }
-  });
-};
-
-const toggleLike = async (post: Post) => {
+const handleToggleLike = async (post: Post) => {
   isLoading.value = true;
   try {
-    await axios.patch(`/posts/${post.id}/like`, {}, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
-
+    await toggleLike(post.id!);
     post.liked = !post.liked;
     post.likes! += post.liked ? 1 : -1;
   } catch (err) {
@@ -232,15 +199,13 @@ const navigateToComments = (postId: number) => {
   router.push({ name: 'postComments', params: { id: postId } });
 };
 
-const sharePost = async (postId: number) => {
+const editPost = (id: number) => {
+  showSuccessAlert('Upcoming feature!');
+}
+const handleSharePost = async (postId: number) => {
   isLoading.value = true;
   try {
-    await axios.post(`/posts/${postId}/share`, {}, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
-
+    await sharePost(postId);
     showSuccessAlert('Post shared successfully');
   } catch (err) {
     showErrorAlert('You have shared this post already.');
