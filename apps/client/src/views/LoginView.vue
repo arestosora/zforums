@@ -29,7 +29,7 @@
 <script lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { login } from '@/utils/auth';
+import { login } from '@/core/auth';
 import { showSuccessAlert, showErrorAlert } from '@/utils/fireAlert';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 
@@ -72,24 +72,5 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
-html,
-body {
-  font-family: 'Poppins', sans-serif;
-}
-
-input:focus,
-button:focus {
-  outline: none;
-}
-
-input::placeholder {
-  color: rgba(128, 128, 128, 0.6);
-  font-style: italic;
-}
-
-.blur-sm {
-  filter: blur(5px);
-}
+@import '@/assets/styles/LoginView.css'
 </style>

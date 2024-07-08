@@ -10,7 +10,7 @@
           <button v-if="showSettings" @click="triggerBannerUpload" class="edit-icon absolute top-1 left-2">
             <i class="pi pi-pencil"></i>
           </button>
-          <input type="file" ref="bannerInput" @change="uploadBanner" class="hidden">
+          <input type="file" ref="bannerInput" @change="handleUploadBanner" class="hidden">
         </div>
         <div class="absolute top-2 right-2">
           <button @click="showSettings = !showSettings" class="edit-icon">
@@ -24,7 +24,7 @@
             class="edit-icon absolute top-5 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <i class="pi pi-pencil"></i>
           </button>
-          <input type="file" ref="avatarInput" @change="uploadAvatar" class="hidden">
+          <input type="file" ref="avatarInput" @change="handleUploadAvatar" class="hidden">
           <p class="username mt-2">{{ authState.user?.name }}</p>
           <textarea v-if="showSettings" v-model="bio" class="bio text-area"></textarea>
           <p v-else class="bio">{{ authState.user?.bio || 'No bio was provided yet.' }}</p>
@@ -36,7 +36,7 @@
             <button @click="currentSection = 'password'" :class="buttonClass(currentSection === 'password')"
               class="custom-button py-2 px-4 rounded-r">Change Password</button>
           </div>
-          <form v-if="currentSection === 'name'" @submit.prevent="updateProfile">
+          <form v-if="currentSection === 'name'" @submit.prevent="handleUpdateProfile">
             <div class="mb-4">
               <label for="name" class="block text-beige mb-1">Name</label>
               <input type="text" v-model="name" id="name"
@@ -50,7 +50,7 @@
             <button type="submit"
               class="custom-update-button w-full py-2 rounded transition-transform transform hover:scale-105">Update Profile</button>
           </form>
-          <form v-if="currentSection === 'password'" @submit.prevent="updatePassword">
+          <form v-if="currentSection === 'password'" @submit.prevent="handleUpdatePassword">
             <div class="mb-4">
               <label for="password" class="block text-beige mb-1">Password</label>
               <input type="password" v-model="password" id="password"
@@ -109,13 +109,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { authState } from '../utils/auth';
-import { format } from 'date-fns';
+import { authState } from '../core/auth';
 import SidebarComponent from '@/components/SidebarComponent.vue';
 import type { Post } from '@/types/Post';
 import { showErrorAlert, showSuccessAlert } from '@/utils/fireAlert';
 import LoadingComponent from '@/components/LoadingComponent.vue';
+import { updateProfile, updatePassword } from '@/services/ProfileService';
+import { fetchSharedPosts, togglePostLike } from '@/services/ProfileService';
+import { useFileUpload } from '@/services/uploadService';
+import { formatDate } from '@/utils/utils';
 
 const currentSection = ref('name');
 const showSettings = ref(false);
@@ -124,41 +126,24 @@ const email = ref(authState.user?.email || '');
 const password = ref('');
 const confirmPassword = ref('');
 const bio = ref(authState.user?.bio || '');
-
-const defaultAvatar = 'path_to_default_avatar_image';
+const defaultAvatar = '../assets/avatar.png';
 const defaultBanner = '../assets/register_background.png';
 const sharedPosts = ref<Post[]>([]);
 const avatarInput = ref<HTMLInputElement | null>(null);
 const bannerInput = ref<HTMLInputElement | null>(null);
 const isLoading = ref(false);
 
+const { handleFileUpload } = useFileUpload(isLoading);
+
 const buttonClass = (isActive: boolean) => isActive ? 'bg-gray-700 text-white' : 'bg-gray-500 text-gray-200';
 
-const updateProfile = async () => {
-  console.log('Name:', name.value);
-  console.log('Email:', email.value);
-  console.log('Bio:', bio.value);
+const handleUpdateProfile = async () => {
   try {
-    const response = await axios.put('/auth/update-profile', {
-      name: name.value,
-      email: email.value,
-      bio: bio.value,
-      avatar: authState.user?.avatar,
-      banner: authState.user?.banner
-    }, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
+    const updatedUser = await updateProfile(name.value, email.value, bio.value);
     authState.user = {
       ...authState.user,
-      name: response.data.name,
-      email: response.data.email,
-      bio: response.data.bio,
-      avatar: response.data.avatar,
-      banner: response.data.banner
+      ...updatedUser
     };
-    localStorage.setItem('authState', JSON.stringify(authState));
     showSuccessAlert('Your profile has been updated successfully');
     setTimeout(() => {
       window.location.reload();
@@ -169,19 +154,13 @@ const updateProfile = async () => {
   }
 };
 
-const updatePassword = async () => {
+const handleUpdatePassword = async () => {
   if (password.value !== confirmPassword.value) {
     showErrorAlert('Passwords do not match');
     return;
   }
   try {
-    await axios.put('/auth/update-profile', {
-      password: password.value
-    }, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
+    await updatePassword(password.value);
     showSuccessAlert('Your password has been updated successfully');
     setTimeout(() => {
       window.location.reload();
@@ -204,90 +183,38 @@ const triggerBannerUpload = () => {
   }
 };
 
-const uploadAvatar = async (event: Event) => {
+const handleUploadAvatar = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
 
   isLoading.value = true;
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const uploadPreset = 'ljgz0ika';
-  const apiKey = '186842759432363';
-  const timestamp = Math.floor(Date.now() / 1000);
-
-  formData.append('upload_preset', uploadPreset);
-  formData.append('api_key', apiKey);
-  formData.append('timestamp', timestamp.toString());
-
   try {
-    const response = await axios.post('https://api.cloudinary.com/v1_1/dijbgmxrh/image/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    const avatarUrl = response.data.secure_url;
-    authState.user = {
-      ...authState.user,
-      avatar: avatarUrl
-    };
-    localStorage.setItem('authState', JSON.stringify(authState));
+    await handleFileUpload(file, 'avatar');
   } catch (err) {
-    console.error(err);
+    console.error('Error uploading avatar:', err);
   } finally {
     isLoading.value = false;
   }
 };
 
-const uploadBanner = async (event: Event) => {
+const handleUploadBanner = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
 
   isLoading.value = true;
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const uploadPreset = 'ljgz0ika';
-  const apiKey = '186842759432363';
-  const timestamp = Math.floor(Date.now() / 1000);
-
-  formData.append('upload_preset', uploadPreset);
-  formData.append('api_key', apiKey);
-  formData.append('timestamp', timestamp.toString());
-
   try {
-    const response = await axios.post('https://api.cloudinary.com/v1_1/dijbgmxrh/image/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    const bannerUrl = response.data.secure_url;
-    authState.user = {
-      ...authState.user,
-      banner: bannerUrl
-    };
-    localStorage.setItem('authState', JSON.stringify(authState));
+    await handleFileUpload(file, 'banner');
   } catch (err) {
-    console.error(err);
+    console.error('Error uploading banner:', err);
   } finally {
     isLoading.value = false;
   }
-};
-
-const formatDate = (dateStr: string) => {
-  return format(new Date(dateStr), 'dd/MM/yyyy HH:mm');
 };
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/posts/shared-by-user/${authState.user?.id}`, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
-    sharedPosts.value = response.data.sort((a: any, b: any) => new Date(b.sharedAt).getTime() - new Date(a.sharedAt).getTime());
+    const posts = await fetchSharedPosts();
+    sharedPosts.value = posts;
   } catch (err) {
     console.error('Error fetching shared posts:', err);
   }
@@ -295,24 +222,17 @@ onMounted(async () => {
 
 const toggleLike = async (post: Post) => {
   try {
-    await axios.patch(`/posts/${post.id}/like`, {}, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
-
-    post.liked = !post.liked;
-    post.likes += post.liked ? 1 : -1;
+    await togglePostLike(post);
   } catch (err) {
     console.error('Error liking post:', err);
   }
 };
 
 const navigateToComments = (postId: number) => {
-
+  // Lógica para navegar a los comentarios
 };
 </script>
 
 <style scoped>
-@import '@/assets/viewStyles/ProfileView.css'
+@import '@/assets/styles/ProfileView.css'
 </style>

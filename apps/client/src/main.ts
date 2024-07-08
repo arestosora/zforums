@@ -2,7 +2,7 @@ import './index.css';
 import './assets/styles.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import 'primeicons/primeicons.css';
-import './utils/axios';
+import './core/axios';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import PrimeVue from 'primevue/config';

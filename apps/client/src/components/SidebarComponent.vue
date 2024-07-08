@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import Sidebar from 'primevue/sidebar';
-import { authState } from '../utils/auth';
+import { authState } from '../core/auth';
 
 const visible = ref(false);
 const userName = ref<string>('');

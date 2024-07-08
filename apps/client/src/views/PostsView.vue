@@ -87,8 +87,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { authState } from '../utils/auth';
-import { formatDate } from '@/services/utils';
+import { authState } from '../core/auth';
+import { formatDate } from '@/utils/utils';
 import type { Post } from '../types/Post';
 import SidebarComponent from '@/components/SidebarComponent.vue';
 import NewsComponent from '@/components/NewsComponent.vue';
@@ -217,5 +217,5 @@ const handleSharePost = async (postId: number) => {
 </script>
 
 <style scoped>
-@import '@/assets/viewStyles/PostsView.css'
+@import '@/assets/styles/PostsView.css'
 </style>

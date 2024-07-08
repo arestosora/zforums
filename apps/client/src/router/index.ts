@@ -7,7 +7,7 @@ import PostsView from '@/views/PostsView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import PostCommentView from '@/views/PostCommentView.vue'
-import { authState } from '@/utils/auth'
+import { authState } from '@/core/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

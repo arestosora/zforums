@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { authState } from "@/utils/auth";
+import { authState } from "@/core/auth";
 import { config } from './config';
 
 axios.defaults.baseURL = `${config.api.baseUrl}/api/v1`;

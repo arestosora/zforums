@@ -60,11 +60,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
-import { format } from 'date-fns';
-import { authState } from '../utils/auth';
 import SidebarComponent from '@/components/SidebarComponent.vue';
-import { showSuccessAlert, showErrorAlert } from '@/utils/fireAlert';
+import { fetchPost, submitComment as postComment } from '@/services/PostCommentService';
+import { format } from 'date-fns';
+import { showErrorAlert } from '@/utils/fireAlert';
+
 const route = useRoute();
 
 const post = ref();
@@ -78,27 +78,18 @@ const submitComment = async () => {
   if (!newComment.value.trim()) return;
 
   try {
-    const response = await axios.post('/comments', {
-      postId: post.value.id,
-      content: newComment.value
-    }, {
-      headers: {
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
-
-    post.value.comments.push(response.data);
-    showSuccessAlert('Comment submitted successfully!');
+    const comment = await postComment(post.value.id, newComment.value);
+    post.value.comments.push(comment);
     newComment.value = '';
-    window.location.reload();
   } catch (err) {
-    showErrorAlert('Error submitting comment, please try again later.');
-    console.error(err);
+    // Error handling already done in postComment
+  } finally {
+    window.location.reload();
   }
 };
 
 const sortedComments = computed(() => {
-  return post.value?.comments.slice().sort((a: { createdAt: string }, b: { createdAt: string }) => {
+  return post.value?.comments.slice().sort((a: { createdAt: string | number | Date; }, b: { createdAt: string | number | Date; }) => {
     const dateA = new Date(a.createdAt);
     const dateB = new Date(b.createdAt);
     return dateB.getTime() - dateA.getTime();
@@ -106,27 +97,16 @@ const sortedComments = computed(() => {
 });
 
 onMounted(async () => {
-  if (!authState.token) {
-    showErrorAlert('Your session has expired. You need to be logged in to view this page.');
-    return;
-  }
-
-  const postId = route.params.id;
+  const postId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
   try {
-    const response = await axios.get(`/posts/${postId}`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${authState.token}`
-      }
-    });
-    post.value = response.data;
+    post.value = await fetchPost(postId);
   } catch (err) {
-    showErrorAlert('Error fetching post, please try again later.');
-    console.error(err);
+    showErrorAlert('There was an error trying to post the comment.')
+    console.error(err)
   }
 });
 </script>
 
 <style scoped>
-@import '@/assets/viewStyles/PostCommentView.css'
+@import '@/assets/styles/PostCommentView.css'
 </style>

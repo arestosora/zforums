@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { authState } from '@/utils/auth';
+import { authState } from '@/core/auth';
 import type { Post } from '@/types/Post';
 
 const API_URL = '/posts';
