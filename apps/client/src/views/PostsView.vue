@@ -11,11 +11,11 @@
       <LoadingComponent :visible="isLoading" />
 
       <!-- Main Content -->
-      <div class="main-content flex-1 flex custom-width mx-auto">
+      <div class="main-content">
         <!-- Posts Wrapper -->
         <div class="posts-wrapper flex-3 flex flex-col overflow-y-auto pb-16">
           <!-- Create Post Container -->
-          <div class="create-post-container post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
+          <div class="create-post-container">
             <div class="header flex items-center mb-4">
               <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || '../assets/avatar.png'" alt="Avatar" />
               <div class="user-info">
@@ -40,17 +40,17 @@
               </button>
             </div>
           </div>
-          <div v-for="post in sortedPosts" :key="post.id" class="post bg-black text-white border border-gray-700 rounded-lg p-4 mb-4 shadow-lg transition-transform transform hover:scale-105">
+          <div v-for="post in sortedPosts" :key="post.id" class="post ">
             <div class="header flex items-center mb-4">
               <img class="avatar w-10 h-10 rounded-full mr-4" :src="post.author!.avatar" alt="Avatar" />
               <div class="user-info flex-grow">
                 <div class="flex items-center">
                   <span class="username font-bold">{{ post.author!.name }}</span>
-                  <span class="timestamp text-gray-500 text-sm ml-2">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
+                  <span class="timestamp ">@{{ post.author!.name }} · {{ formatDate(post.createdAt!) }}</span>
                 </div>
               </div>
               <div v-if="authState.user?.id === post.author!.id" class="flex ml-auto">
-                <button @click="editPost(post.id!)" class="edit-button hover:text-blue-500 mr-2">
+                <button @click="editPost(post.id!)" class="edit-button ">
                   <i class="pi pi-pencil"></i>
                 </button>
                 <button @click="handleDeletePost(post.id!)" class="delete-button hover:text-red-500">
