@@ -24,4 +24,11 @@ export class LikeService {
       await this.likeRepository.remove(like);
     }
   }
+  async getLikes(postId: number): Promise<Like[]> {
+    return await this.likeRepository.find({
+      where: { post: { id: postId } },
+      relations: ['user'], // If you want to include user information in the response
+    });
+  }
+
 }

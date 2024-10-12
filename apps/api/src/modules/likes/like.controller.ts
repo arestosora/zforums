@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Param, Delete, Get } from '@nestjs/common';
 import { LikeService } from './like.service';
 
 @Controller('likes')
@@ -13,6 +13,11 @@ export class LikeController {
   @Delete(':id')
   async delete(@Param('id') id: string, @Body('userId') userId: number): Promise<void> {
     await this.likeService.unlike(parseInt(id), userId);
+  }
+
+  @Get(':postId')
+  async getLikesForPost(@Param('postId') postId: string): Promise<any[]> {
+    return this.likeService.getLikes(parseInt(postId));
   }
 }
 
