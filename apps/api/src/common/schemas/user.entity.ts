@@ -1,8 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, DeleteDateColumn, CreateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 import { Role } from '../enums/rol.enum';
 import { Post } from './post.entity';
 import { Comment } from './comment.entity';
 import { PostShare } from './postShare.entity';
+import { Like } from './like.entity';
+
 
 @Entity()
 export class User {
@@ -44,4 +46,7 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany(() => Like, like => like.user)
+  likes: Like[];
 }

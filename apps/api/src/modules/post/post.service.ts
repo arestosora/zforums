@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreatePostDto, UpdatePostDto } from './post.dto';
 import { User } from 'src/common/schemas/user.entity';
 import { PostShare } from 'src/common/schemas/postShare.entity';
+import { Like } from 'src/common/schemas/like.entity';
 
 @Injectable()
 export class PostService {
@@ -14,6 +15,9 @@ export class PostService {
 
     @InjectRepository(PostShare)
     private readonly postShareRepository: Repository<PostShare>,
+
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
   ) {}
 
   async create(createPostDto: CreatePostDto, user: User): Promise<Post> {
@@ -60,7 +64,6 @@ export class PostService {
       throw new NotFoundException(`Post with ID ${postId} not found`);
     }
 
-    post.likes = (post.likes || 0) + 1;
 
     try {
       return await this.postRepository.save(post);
@@ -104,6 +107,29 @@ export class PostService {
     } catch (error) {
       console.error('Error sharing post:', error);
       throw new InternalServerErrorException('Failed to share post');
+    }
+  }
+  // Add the like method
+  async like(postId: number, userId: number) {
+    const existingLike = await this.likeRepository.findOne({
+      where: { post: { id: postId }, user: { id: userId } },
+    });
+  
+    if (existingLike) {
+      throw new ConflictException('User has already liked this post');
+    }
+  
+    const like = this.likeRepository.create({ post: { id: postId }, user: { id: userId } });
+    return await this.likeRepository.save(like);
+  }
+
+  async unlike(postId: number, userId: number) {
+    const like = await this.likeRepository.findOne({
+      where: { post: { id: postId }, user: { id: userId } },
+    });
+
+    if (like) {
+      await this.likeRepository.remove(like);
     }
   }
 }

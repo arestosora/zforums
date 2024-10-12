@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, CreateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, CreateDateColumn, DeleteDateColumn, JoinTable, ManyToMany, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
 import { PostShare } from './postShare.entity';
+import { Like } from './like.entity';
 
 
 @Entity()
@@ -18,8 +19,8 @@ export class Post {
   @Column({ nullable: true })
   imageUrl: string;
 
-  @Column({ nullable: true })
-  likes: number;
+  /* @Column({ nullable: true })// comentao pa intenta implementar los likes
+  likes: number; */
 
   @ManyToOne(() => User, user => user.posts)
   @JoinColumn({ name: 'authorId' })
@@ -36,4 +37,7 @@ export class Post {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany(() => Like, like => like.post)
+  likes: Like[];
 }

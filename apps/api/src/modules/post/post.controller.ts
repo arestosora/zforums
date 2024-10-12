@@ -8,7 +8,7 @@ import {
   Body,
   HttpException,
   HttpStatus,
-  Patch,
+
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto, UpdatePostDto } from './post.dto';
@@ -85,15 +85,27 @@ export class PostController {
     }
   }
 
-  @Patch(':id/like')
-  async likePost(@Param('id') id: number) {
-    try {
-      const post = await this.postService.likePost(id);
-      return post;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+
+  @HttpPost(':id/like') 
+  async like(@Param('id') id: number, @ActiveUser() user: User) { 
+    try { 
+      const likedPost = await this.postService.like(id, user.id);
+       return likedPost; 
+      } catch (error) { 
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+
     }
-  }
+
+  @Delete(':id/like') 
+  async unlike(@Param('id') id: number, @ActiveUser() user: User) { 
+    try { 
+      const unlikedPost = await this.postService.unlike(id, user.id);
+        return unlikedPost; 
+        } catch (error) {
+           throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+          } 
+    }
 
   @Get('shared-by-user/:userId')
   async getSharedPostsByUser(@Param('userId') userId: number) {

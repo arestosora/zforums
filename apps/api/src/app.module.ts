@@ -5,7 +5,8 @@ import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { PostModule } from './modules/post/post.module';
 import { CommentModule } from './modules/comment/comment.module';
-import { ConfigService } from '@nestjs/config';
+import { LikesModule } from './modules/likes/like.modules';
+// import { SharedPostModule } from './modules/shared-post/shared-
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
     DatabaseModule,
     PostModule,
     CommentModule,
+    LikesModule,
   ],
 })
 
