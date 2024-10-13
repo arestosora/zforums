@@ -125,7 +125,7 @@ onMounted(async () => {
         const likes = await getLikes(post.id);  // Obtener likes
         return {
           ...post,
-          liked: likes.some((like: { user: { id: any; }; }) => like.user.id === authState.user.id),  // Solo marcar como likeado si el usuario autenticado dio like
+          liked: likes.some((like: { user: { id: number; }; }) => like.user.id === authState.user.id),  // Solo marcar como likeado si el usuario autenticado dio like
           likes: likes.length  // Asignar el número total de likes
         };
       })
