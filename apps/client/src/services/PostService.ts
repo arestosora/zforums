@@ -35,7 +35,15 @@ export const deletePost = async (postId: number): Promise<void> => {
 };
 
 export const toggleLike = async (postId: number): Promise<void> => {
-  await axios.patch(`${API_URL}/${postId}/like`, {}, {
+  await axios.post(`${API_URL}/${postId}/like`, {}, {
+    headers: {
+      'Authorization': `Bearer ${authState.token}`
+    }
+  });
+};
+
+export const toggleUnLike = async (postId: number): Promise<void> => {
+  await axios.delete(`${API_URL}/${postId}/like`, {
     headers: {
       'Authorization': `Bearer ${authState.token}`
     }

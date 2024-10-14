@@ -4,7 +4,7 @@
     <div class="sidebar-container">
       <SidebarComponent class="sidebar-component" />
     </div>
-    
+
     <!-- Main Container -->
     <div class="flex flex-col lg:flex-row justify-center items-start w-full max-w-screen-lg mx-auto mt-4 lg:mt-0">
       <!-- Loading component -->
@@ -17,7 +17,8 @@
           <!-- Create Post Container -->
           <div class="create-post-container">
             <div class="header flex items-center mb-4">
-              <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || '../assets/avatar.png'" alt="Avatar" />
+              <img class="avatar w-10 h-10 rounded-full mr-4" :src="authState.user?.avatar || '../assets/avatar.png'"
+                alt="Avatar" />
               <div class="user-info">
                 <div class="flex items-center">
                   <span class="username font-bold">{{ authState.user?.name || 'Username' }}</span>
@@ -25,14 +26,16 @@
               </div>
             </div>
             <div class="content mb-4">
-              <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3" placeholder="What's on your mind?"></textarea>
+              <textarea v-model="newPostContent" class="w-full p-2 bg-gray-800 text-white border rounded mb-4" rows="3"
+                placeholder="What's on your mind?"></textarea>
               <div class="flex items-center mb-4">
                 <button @click="triggerFileInput" class="upload-button hover:text-green-500">
                   <i class="pi pi-image mr-2"></i>Upload Image
                 </button>
                 <input type="file" ref="fileInput" @change="onFileChange" class="hidden">
               </div>
-              <img v-if="newPostImageUrl" :src="newPostImageUrl" alt="Selected Image" class="selected-image w-full rounded mb-4">
+              <img v-if="newPostImageUrl" :src="newPostImageUrl" alt="Selected Image"
+                class="selected-image w-full rounded mb-4">
             </div>
             <div class="actions flex justify-end text-gray-500">
               <button @click="handleCreatePost" class="create-post-button hover:text-green-500">
@@ -63,7 +66,9 @@
               <img v-if="post.imageUrl" :src="post.imageUrl" alt="Post Image" class="post-image w-full rounded">
             </div>
             <div class="actions flex justify-between text-gray-500">
-              <button @click="handleToggleLike(post)" :class="{'text-green-500': post.liked, 'text-gray-500': !post.liked}" class="action-button hover:text-green-500">
+              <button @click="toggleLike(post.id!)"
+                :class="{ 'text-green-500': post.liked, 'text-gray-500': !post.liked }"
+                class="action-button hover:text-green-500">
                 <i class="pi pi-thumbs-up mr-1"></i>Like <span class="ml-1">{{ post.likes }}</span>
               </button>
               <button @click="navigateToComments(post.id!)" class="action-button hover:text-green-500">
@@ -95,7 +100,8 @@ import NewsComponent from '@/components/NewsComponent.vue';
 import { showErrorAlert, showSuccessAlert } from '@/utils/fireAlert';
 import LoadingComponent from '@/components/LoadingComponent.vue';
 import { useFileUpload } from '@/services/uploadService';
-import { getPosts, createPost, deletePost, toggleLike, sharePost } from '@/services/PostService';
+import { getPosts, createPost, deletePost, toggleLike as toggleLikeApi, toggleUnLike, sharePost } from '@/services/PostService';
+import { getLikes } from '@/services/LikeService';
 
 const isLoading = ref(false);
 const router = useRouter();
@@ -114,10 +120,16 @@ onMounted(async () => {
 
   try {
     const data = await getPosts();
-    posts.value = data.map(post => ({
-      ...post,
-      liked: false
-    })).sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+    posts.value = await Promise.all(
+      data.map(async post => {
+        const likes = await getLikes(post.id);  // Obtener likes
+        return {
+          ...post,
+          liked: likes.some((like: { user: { id: number; }; }) => like.user.id === authState.user.id),  // Solo marcar como likeado si el usuario autenticado dio like
+          likes: likes.length  // Asignar el número total de likes
+        };
+      })
+    );
     console.log('Data received:', data);
   } catch (err) {
     showErrorAlert('Error fetching posts. Please try again later.');
@@ -168,14 +180,27 @@ const handleDeletePost = async (postId: number) => {
   }
 };
 
-const handleToggleLike = async (post: Post) => {
+const toggleLike = async (postId: number) => {
+  const postIndex = posts.value.findIndex(post => post.id === postId);
+  if (postIndex === -1) return;
+
+  const post = posts.value[postIndex];
   isLoading.value = true;
+
   try {
-    await toggleLike(post.id!);
-    post.liked = !post.liked;
-    post.likes! += post.liked ? 1 : -1;
+    if (post.liked) {
+      await toggleUnLike(postId);  // Quitar like
+      post.liked = false;
+      post.likes -= 1;  // Actualizar el número de likes
+      showSuccessAlert('Post unliked successfully');
+    } else {
+      await toggleLikeApi(postId);  // Agregar like
+      post.liked = true;
+      post.likes += 1;  // Actualizar el número de likes
+      showSuccessAlert('Post liked successfully');
+    }
   } catch (err) {
-    showErrorAlert('Error liking post. Please try again later.');
+    showErrorAlert('Error updating like status. Please try again later.');
     console.error(err);
   } finally {
     isLoading.value = false;
